@@ -24,8 +24,12 @@ interface Plan {
     url1_word_count: number;
     url2_word_count: number;
   };
+  suggested_keywords: string[];
+  performance: {
+    missing_keywords_perf: number[];
+    suggested_keywords_perf: number[];
+  };
 }
-
 interface PlanFunction {
   name: string;
   description: string;
@@ -36,7 +40,6 @@ interface PlanTool {
   type: string;
   function: PlanFunction;
 }
-
 interface ResponseTool {
   type: string;
   function: {
@@ -48,8 +51,11 @@ interface ResponseTool {
 
 export async function agent(req: Request, res: Response): Promise<void> {
   const { userUrl, competitorUrl } = req.body;
-
   try {
+    if (!userUrl || !competitorUrl) {
+      return;
+    }
+
     const [url1content, url2content]: [any, any] = await Promise.all([
       agentTools.invoke({
         urls: [userUrl],
@@ -72,7 +78,22 @@ export async function agent(req: Request, res: Response): Promise<void> {
       {
         messages: [
           new HumanMessage(
-            "what missing keywords does url1 is missing to compare with url2"
+            `what missing seo keywords does url1content is missing to compare with url2content
+             Use the following principles:
+              - Suggest at least 5 unique tags not already in the existing tags
+              - Include a mix of specific and broader tags
+              - Focus on current trends and popular search terms
+              - Consider both short and long-tail keywords
+              - Provide in depths missing keywords performance in percentage (like 10-30%, etc..)
+
+             For the suggested seo keywords provide score:
+              - Low-competition, high-relevance tags should get 15-25%
+              - Medium-competition, medium-relevance tags should get 8-15%
+              - High-competition, low-relevance tags should get 3-8%
+              - Trending or seasonal tags should get a bonus of 1-5%
+              - Very specific niche tags relevant to the video's topic should get 10-18%
+              - Generic tags should get 2-5%
+            `
           ),
         ],
       },
@@ -91,6 +112,17 @@ export async function agent(req: Request, res: Response): Promise<void> {
         url1_word_count: z.number().describe("Word count of URL 1."),
         url2_word_count: z.number().describe("Word count of URL 2."),
       }),
+      suggested_keywords: z
+        .array(z.string())
+        .describe("suggested seo keywords"),
+      performance: z.object({
+        missing_keywords_perf: z
+          .array(z.number())
+          .describe("Missing keywords Performance"),
+        suggested_keywords_perf: z
+          .array(z.number())
+          .describe("Suggested keywords Performance"),
+      }),
     });
 
     const planFunction: PlanFunction = {
@@ -105,10 +137,11 @@ export async function agent(req: Request, res: Response): Promise<void> {
       function: planFunction,
     };
 
-    // current state of the agent that define the step to preced to plan
+    // current state of the agent that define the step to precceds to plans
+    // based on the human message
     const plannerPrompt = ChatPromptTemplate.fromTemplate(
       `You are an SEO specialist. Your task is to analyze and compare the two blog contents below and provide a detailed SEO comparison.
-
+        
         Article 1 Content :
         {url1_content} (this urls belongs to user article or blog)
             
@@ -129,10 +162,10 @@ export async function agent(req: Request, res: Response): Promise<void> {
         3. **Word Count Comparison**  
              - Count and report the word count of both articles.  
              - Mention if one is significantly longer and whether that benefits SEO.
-
-        4. **Suggest good seo keyowrds alternatives**
-                - Provide with good and relevant seo keywords
-            
+        
+        4. **Performance Scores** 
+            - For each tags, provide a realistic performance score based on search volume and competition. 
+             - For suggested keywords compare performance score the with missing relevant keywords the performance score of missing keywords
         Make the output structured and concise. List keywords in a bullet list or comma-separated format.
 `
     );
@@ -238,7 +271,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
           .join("\n"),
       });
       if (typeof output === "string") {
-        return { response: output }; // assume it's final response
+        return { response: output }; // agent assume it's final response
       }
 
       // If it's tool output with a structure like { type, args }
@@ -266,14 +299,12 @@ export async function agent(req: Request, res: Response): Promise<void> {
         false: "agent",
       });
 
-    // Finally, we compile it!
-    // This compiles it into a LangChain Runnable,
-    // meaning you can use it as you would any other runnable
     workflow.compile();
     res.status(200).json({
       message: result,
     });
   } catch (error) {
+    console.error("error ", error.message);
     res.status(500).send("Error");
   }
 }
