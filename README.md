@@ -1,5 +1,6 @@
 Q. What this app does?
-basic feature is just to extract the hidden insight of your content specifically (SEO Keywords and performance) currently feature using visualization and agent usign langgraph
+
+Basic feature is to extract the hidden insight of your content specifically (Missing Relevant SEO Keywords and performance) currently feature using visualization and agent usign langgraph
 (...app does not build for scalable product lack many capabilites due agent handling [might be 😔])
 
 Current Rough design flow of this app i created using eraser.io
