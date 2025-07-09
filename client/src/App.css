@@ -1,0 +1,245 @@
+@keyframes ripple-wave {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(0%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0.3;
+  }
+}
+
+@keyframes ripple-circle {
+  0% {
+    transform: scale(0);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-circle-2 {
+  0% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-circle-3 {
+  0% {
+    transform: scale(0);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-line {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateX(0%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0.35;
+  }
+}
+
+@keyframes ripple-line-2 {
+  0% {
+    transform: translateX(-150%);
+    opacity: 0.35;
+  }
+  60% {
+    transform: translateX(0%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(150%);
+    opacity: 0.35;
+  }
+}
+
+@keyframes ripple-bar {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(0%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0.3;
+  }
+}
+
+@keyframes ripple-bar-2 {
+  0% {
+    transform: translateX(-150%);
+    opacity: 0.2;
+  }
+  60% {
+    transform: translateX(0%);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(150%);
+    opacity: 0.2;
+  }
+}
+
+@keyframes ripple-chart {
+  0% {
+    transform: translateX(-100%) skewX(-30deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(100%) skewX(-30deg);
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateX(200%) skewX(-30deg);
+    opacity: 0;
+  }
+}
+
+.animate-ripple-wave {
+  animation: ripple-wave 2s infinite ease-in-out;
+}
+
+.animate-ripple-circle {
+  animation: ripple-circle 2.5s infinite ease-in-out;
+}
+.animate-ripple-circle-2 {
+  animation: ripple-circle-2 2.7s infinite ease-in-out;
+}
+.animate-ripple-circle-3 {
+  animation: ripple-circle-3 3s infinite ease-in-out;
+}
+
+.animate-ripple-line {
+  animation: ripple-line 1.8s infinite ease-in-out;
+}
+.animate-ripple-line-2 {
+  animation: ripple-line-2 2s infinite ease-in-out;
+}
+.animate-ripple-bar {
+  animation: ripple-bar 2.2s infinite ease-in-out;
+}
+.animate-ripple-bar-2 {
+  animation: ripple-bar-2 2.4s infinite ease-in-out;
+}
+
+.animate-ripple-chart {
+  animation: ripple-chart 3s infinite ease-out;
+}
+.skeleton-container {
+  padding: 1.5rem;
+  background-color: rgba(31, 41, 55, 0.5);
+  border-radius: 0.75rem; 
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #374151;
+  color: #fff; 
+}
+
+.skeleton-space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1.5rem;
+}
+
+.skeleton-line-base {
+  position: relative;
+  height: 1rem;
+  background-color: #4b5563;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  color: rgba(59, 131, 246, 0.838);
+}
+
+.skeleton-chart-area {
+  position: relative;
+  width: 100%;
+  height: 12rem;
+  background-color: #4b5563;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .skeleton-chart-area {
+    height: 16rem;
+  }
+}
+@media (min-width: 768px) {
+  .skeleton-chart-area {
+    height: 18rem;
+  }
+}
+
+.skeleton-chart-bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 1rem;
+}
+
+.skeleton-bar {
+  background-color: #6b7280;
+  border-radius: 0.125rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-bar-h-3-4 {
+  height: 75%;
+}
+.skeleton-bar-h-1-2 {
+  height: 50%;
+} 
+.skeleton-bar-h-5-6 {
+  height: 83.333333%;
+} 
+.skeleton-bar-h-2-3 {
+  height: 66.666667%;
+} 
+.skeleton-bar-w-1-6 {
+  width: 16.666667%;
+} 
+.skeleton-text-line {
+  position: relative;
+  height: 0.75rem;
+  background-color: #4b5563;
+  border-radius: 0.25rem; 
+  overflow: hidden;
+}
+.skeleton-text-line-w-3-4 {
+  width: 75%;
+}
+
+.skeleton-flex-1 {
+  flex: 1 1 0%; 
+}
+
+.skeleton-space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem; 
+}

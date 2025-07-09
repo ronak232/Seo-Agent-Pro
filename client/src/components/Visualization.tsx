@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { FileText, AlertCircle, Lightbulb, CheckCircle } from "lucide-react";
+import {
+  FileText,
+  AlertCircle,
+  Lightbulb,
+  CheckCircle,
+  Info,
+} from "lucide-react";
 import {
   Chart as ChartJS,
   BarController,
@@ -20,11 +26,10 @@ import {
   PieController,
 } from "chart.js";
 import type { ApiResponse } from "../types/type";
-import RippleSkeleton from "./Skeleton";
+import { TbTooltip } from "react-icons/tb";
 
 interface Props {
   analysisData: ApiResponse | null;
-  loading: boolean;
 }
 
 ChartJS.register(
@@ -74,7 +79,7 @@ const KeywordCard: React.FC<{
   </div>
 );
 
-const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
+const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
   /** Destroys existing charts and creates new ones whenever data changes */
 
   useEffect(() => {
@@ -172,7 +177,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
               },
               title: {
                 display: true,
-                text: "SEO Keywords Overview",
+                text: "Missing SEO Keywords",
                 color: "#9ca3af",
               },
             },
@@ -198,7 +203,8 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
                 backgroundColor: ["#f59e0b", "#10b981"],
                 borderColor: ["#d97706", "#059669"],
                 borderWidth: 2,
-                label: "Missing Keywords",
+                label: "Suggested Keywords",
+                yAxisID: "Performance",
               },
             ],
           },
@@ -212,7 +218,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
               },
               title: {
                 display: true,
-                text: "SEO Keywords Overview",
+                text: "Suggested SEO Keywords",
                 color: "#9ca3af",
               },
             },
@@ -258,7 +264,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
                   yourScore * 0.8,
                   yourScore * 0.9,
                 ],
-                backgroundColor: "rgba(59,130,246,0.2)",
+                backgroundColor: "rgba(59, 131, 246, 0.838)",
                 borderColor: "#3b82f6",
                 borderWidth: 2,
               },
@@ -279,7 +285,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
                   competitorScore * 0.8,
                   competitorScore * 0.9,
                 ],
-                backgroundColor: "rgba(239,68,68,0.2)",
+                backgroundColor: "rgba(251, 50, 50, 0.9)",
                 borderColor: "#ef4444",
                 borderWidth: 2,
               },
@@ -312,7 +318,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
   }, [analysisData]);
   console.log("api response ", analysisData);
 
-  return !loading ? (
+  return (
     <div className="space-y-8">
       {/* Blog Titles */}
       <div className="bg-gray-800 bg-opacity-50 backdrop-blur-lg rounded-xl p-6 border border-gray-700">
@@ -341,12 +347,30 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
       {/* Charts */}
       <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
         <div className="h-64">
+          <div className="flex items-center justify-center gap-2 flex-row-reverse">
+            <div className="tooltip">
+              <Info className="text-xs" />
+              <p className="tooltip-content">
+                SEO Keyowrds used by competitors, missing in your blog.
+              </p>
+            </div>
+            <h2 className="text-[1.2rem]">Missing SEO Keywords</h2>
+          </div>
           <canvas id="keywordChart" />
         </div>
       </div>
 
       <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
         <div className="h-64">
+          <div className="flex items-center justify-center gap-1 flex-row-reverse">
+            <div className="tooltip">
+              <Info className="h-3.5 w-3.5" />
+              <p className="tooltip-content">
+                Suggested keywords to boost your reach.
+              </p>
+            </div>
+            <h2 className="text-[1.2rem]">Suggested SEO Keywords</h2>
+          </div>
           <canvas id="suggestKeywordsChart" />
         </div>
       </div>
@@ -417,8 +441,6 @@ const SEOVisualization: React.FC<Props> = ({ analysisData, loading }) => {
         </div>
       </div>
     </div>
-  ) : (
-    <RippleSkeleton />
   );
 };
 

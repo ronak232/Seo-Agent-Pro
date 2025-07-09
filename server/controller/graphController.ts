@@ -74,32 +74,6 @@ export async function agent(req: Request, res: Response): Promise<void> {
       checkpointSaver: agentCheckpointer,
     });
 
-    await agent.invoke(
-      {
-        messages: [
-          new HumanMessage(
-            `what missing seo keywords does url1content is missing to compare with url2content
-             Use the following principles:
-              - Suggest at least 5 unique tags not already in the existing tags
-              - Include a mix of specific and broader tags
-              - Focus on current trends and popular search terms
-              - Consider both short and long-tail keywords
-              - Provide in depths missing keywords performance in percentage (like 10-30%, etc..)
-
-             For the suggested seo keywords provide score:
-              - Low-competition, high-relevance tags should get 15-25%
-              - Medium-competition, medium-relevance tags should get 8-15%
-              - High-competition, low-relevance tags should get 3-8%
-              - Trending or seasonal tags should get a bonus of 1-5%
-              - Very specific niche tags relevant to the video's topic should get 10-18%
-              - Generic tags should get 2-5%
-            `
-          ),
-        ],
-      },
-      { configurable: { thread_id: "23" } }
-    );
-
     const plan = z.object({
       missing_keywords: z
         .array(z.string())
@@ -141,35 +115,68 @@ export async function agent(req: Request, res: Response): Promise<void> {
     // based on the human message
     const plannerPrompt = ChatPromptTemplate.fromTemplate(
       `You are an SEO specialist. Your task is to analyze and compare the two blog contents below and provide a detailed SEO comparison.
-        
-        Article 1 Content :
-        {url1_content} (this urls belongs to user article or blog)
-            
-        Article 2 Content :
-        {url2_content} (this url belongs to competitor article or blog)
-            
-        Based on your analysis, return the following:
-            
-        1. **Missing SEO Keywords in Article 1**  
-             - Identify high-impact SEO keywords that are present in Article 2 but not in Article 1.  
-             - These should be real, rankable search terms or phrases users might use on Google.  
-             - Prioritize keywords that improve organic visibility.
-            
-        2. **Meta Title Comparison**  
-             - Extract and compare the meta titles (or infer if not explicitly available).  
-             - Provide suggestions to improve Article 1's meta title if it is weaker.
-            
-        3. **Word Count Comparison**  
-             - Count and report the word count of both articles.  
-             - Mention if one is significantly longer and whether that benefits SEO.
-        
-        4. **Performance Scores** 
-            - For each tags, provide a realistic performance score based on search volume and competition. 
-             - For suggested keywords compare performance score the with missing relevant keywords the performance score of missing keywords
-        Make the output structured and concise. List keywords in a bullet list or comma-separated format.
+
+Article 1 Content:
+{url1_content} (this url belongs to the user article or blog)
+
+Article 2 Content:
+{url2_content} (this url belongs to the competitor article or blog)
+
+Based on your analysis, return the following:
+
+1. **Missing SEO Keywords in Article 1**
+   - Identify high-impact SEO keywords that are present in Article 2 but not in Article 1.
+   - These should be real, rankable search terms or phrases users might use on Google.
+   - Prioritize keywords that improve organic visibility.
+
+2. **Meta Title Comparison**
+   - Extract and compare the meta titles (or infer if not explicitly available).
+   - Provide suggestions to improve Article 1's meta title if it is weaker.
+
+3. **Word Count Comparison**
+   - Count and report the word count of both articles.
+   - Mention if one is significantly longer and whether that benefits SEO.
+
+4. **Performance Scores**
+   - For each keyword, provide a realistic performance score based on search volume and competition.
+   - For suggested keywords, compare their performance score with that of the missing keywords.
+
+**Output format**
+Return your response in **valid JSON** strictly matching the following format:
+
+\`\`\`json
+{{
+  "message": {{
+    "meta_info_comparison": {{
+      "url1_title": "string",
+      "url2_title": "string"
+    }},
+    "missing_keywords": ["string"],
+    "suggested_keywords": ["string"],
+    "word_count_comparison": {{
+      "url1_word_count": number,
+      "url2_word_count": number
+    }},
+    "performance": {{
+      "missing_keywords_perf": [number],
+      "suggested_keywords_perf": [number]
+    }}
+  }}
+}}
+\`\`\`
 `
     );
 
+    await agent.invoke(
+      {
+        messages: [
+          new HumanMessage(
+            "what missing seo keywords does url1content is missing to compare with url2content"
+          ),
+        ],
+      },
+      { configurable: { thread_id: "23" } }
+    );
     const modelTools = agentModel.withStructuredOutput(plan);
 
     const planner = plannerPrompt.pipe(modelTools);
