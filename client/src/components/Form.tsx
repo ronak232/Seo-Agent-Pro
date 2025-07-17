@@ -19,7 +19,7 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, loading, error }) => {
         <Search className="w-5 h-5 mr-2 text-blue-400" />
         Blog URL Comparison
       </h2>
-      <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form className="flex flex-col">
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Your Blog URL

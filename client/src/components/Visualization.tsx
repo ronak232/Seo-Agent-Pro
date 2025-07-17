@@ -347,9 +347,9 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
       {/* Charts */}
       <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
         <div className="h-64">
-          <div className="flex items-center justify-center gap-2 flex-row-reverse">
+          <div className="flex items-center justify-center gap-1 flex-row-reverse">
             <div className="tooltip">
-              <Info className="text-xs" />
+              <Info className="h-3.5 w-3.5" />
               <p className="tooltip-content">
                 SEO Keyowrds used by competitors, missing in your blog.
               </p>

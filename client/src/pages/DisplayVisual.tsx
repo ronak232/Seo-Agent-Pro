@@ -3,8 +3,8 @@ import AnalysisForm from "../components/Form";
 import SEOVisualization from "../components/Visualization";
 import type { ApiResponse } from "../types/type"; // export that interface if you want reuse
 import axios from "axios";
-import Navbar from "../components/Navbar";
 import RippleSkeleton from "../components/Skeleton";
+import SEOToolSteps from "@/components/SEOToolSteps";
 
 const SEODashboard: React.FC = () => {
   const [analysisData, setAnalysisData] = useState<ApiResponse | null>(null);
@@ -36,9 +36,9 @@ const SEODashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-white bg-base-300">
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen text-white bg-white">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 mb-10">
+        <SEOToolSteps />
         <AnalysisForm
           onAnalyze={handleAnalyze}
           loading={loading}
