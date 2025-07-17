@@ -1,12 +1,19 @@
 import "./App.css";
+import Navbar from "./components/Navbar";
+import SEOFooter from "./components/SEOFooter";
 import SEODashboard from "./pages/DisplayVisual";
+import Home from "./pages/Home";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
     <>
-      <div>
-        <SEODashboard/>
-      </div>
+      <Navbar />
+      <Routes>
+        <Route path="/home" element={<Home />} />
+        <Route path="/seo-tool" element={<SEODashboard />} />
+      </Routes>
+      <SEOFooter/>
     </>
   );
 }
