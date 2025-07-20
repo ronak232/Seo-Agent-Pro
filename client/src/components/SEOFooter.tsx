@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 function SEOFooter() {
   return (
-    <footer className="bg-white backdrop-blur-md shadow-lg mx-auto max-w-full px-2 py-10 text-center animate-fade-in mt-7 border border-t-gray-300">
+    <footer className="bg-white backdrop-blur-md shadow-lg mx-auto max-w-full px-2 py-10 text-center animate-fade-in border border-t-gray-300">
       <div className="flex flex-col items-center gap-3">
         <p className="text-4xl font-bold text-blue-700">
           SEO Tool 

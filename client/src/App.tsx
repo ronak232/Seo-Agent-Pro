@@ -10,6 +10,7 @@ function App() {
     <>
       <Navbar />
       <Routes>
+        <Route path="/" element={<Home/>}/>
         <Route path="/home" element={<Home />} />
         <Route path="/seo-tool" element={<SEODashboard />} />
       </Routes>

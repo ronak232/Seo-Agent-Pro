@@ -10,9 +10,11 @@ import { RunnableConfig } from "@langchain/core/runnables";
 import { HumanMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { z } from "zod";
-import { agentModel, agentTools } from "../services/agent";
+import { agentModel, agentTools } from "../services/services";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Request, Response } from "express";
+import { tool } from "@langchain/core/tools";
+import sanitizeHtml from 'sanitize-html';
 
 interface Plan {
   missing_keywords: string[];
@@ -29,24 +31,7 @@ interface Plan {
     missing_keywords_perf: number[];
     suggested_keywords_perf: number[];
   };
-}
-interface PlanFunction {
-  name: string;
-  description: string;
-  parameters: any;
-}
-
-interface PlanTool {
-  type: string;
-  function: PlanFunction;
-}
-interface ResponseTool {
-  type: string;
-  function: {
-    name: string;
-    description: string;
-    parameters: any;
-  };
+  improved_meta_title: string;
 }
 
 export async function agent(req: Request, res: Response): Promise<void> {
@@ -67,11 +52,81 @@ export async function agent(req: Request, res: Response): Promise<void> {
 
     // Initialize memory to persist state between graph runs
     const agentCheckpointer = new MemorySaver();
-
     const agent = createReactAgent({
       llm: agentModel,
       tools: [agentTools],
       checkpointSaver: agentCheckpointer,
+    });
+
+    await agent.invoke(
+      {
+        messages: [
+          new HumanMessage(
+            "Extract all keywords from Article 2. Then, remove any keyword already present in Article 1. The remaining ones are the missing keywords."
+          ),
+        ],
+      },
+      { configurable: { thread_id: "23" } }
+    );
+
+    const wordCountSchema = z.object({
+      htmlContent: z.string().describe("The HTML content of the webpage."),
+    });
+
+    const wordCounterTool = tool(
+      async ({ htmlContent }) => {
+        // 1. Sanitize the HTML to remove scripts, styles, and unwanted tags
+        const cleanText = sanitizeHtml(htmlContent, {
+          allowedTags: [
+            "p",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "li",
+            "strong",
+            "em",
+            "b",
+            "i",
+            "u",
+          ],
+          allowedAttributes: {},
+        });
+
+        // 2. A more robust way to count words, handling various whitespace
+        const words = cleanText.match(/\b\w+\b/g) || [];
+        return words.length.toString();
+      },
+      {
+        name: "word_counter",
+        description:
+          "Accurately counts the words in a given HTML content by first cleaning it.",
+        schema: wordCountSchema,
+      }
+    );
+    /**
+     * Represents the state for a plan execution process, including input, plan steps, past steps, and response.
+     *
+     * @property {string} input - The current input string. Reducer prioritizes the new value, falling back to the previous or an empty string.
+     * @property {string[]} plan - The list of planned steps as strings. Reducer prioritizes the new value, falling back to the previous or an empty array.
+     * @property {[string, string][]} pastSteps - An array of tuples representing past steps and their results. Reducer concatenates new steps to the existing array.
+     * @property {string} response - The response string. Reducer prioritizes the new value, falling back to the previous value.
+     */
+    const PlanExecuteState = Annotation.Root({
+      input: Annotation<string[]>({
+        reducer: (x, y) => y ?? x ?? [],
+      }),
+      plan: Annotation<string[]>({
+        reducer: (x, y) => y ?? x ?? [],
+      }),
+      pastSteps: Annotation<[string, string][]>({
+        reducer: (x, y) => x.concat(y),
+      }),
+      response: Annotation<string>({
+        reducer: (x, y) => y ?? x,
+      }),
     });
 
     const plan = z.object({
@@ -97,94 +152,87 @@ export async function agent(req: Request, res: Response): Promise<void> {
           .array(z.number())
           .describe("Suggested keywords Performance"),
       }),
+      improved_meta_title: z
+        .string()
+        .describe("Suggested improved meta title for URL 1."),
     });
-
-    const planFunction: PlanFunction = {
-      name: "plan",
-      description:
-        "This tool is used to plan the steps to follow to extract the missing relevant seo keywords that {userUrl} have in their blogs when comparing with the blog or aricles url-{competitorUrl}",
-      parameters: plan,
-    };
-
-    const planTool: PlanTool = {
-      type: "function",
-      function: planFunction,
-    };
 
     // current state of the agent that define the step to precceds to plans
     // based on the human message
     const plannerPrompt = ChatPromptTemplate.fromTemplate(
       `You are an SEO specialist. Your task is to analyze and compare the two blog contents below and provide a detailed SEO comparison.
 
-Article 1 Content:
-{url1_content} (this url belongs to the user article or blog)
+        Article 1 Content:
+        {url1_content}
+            
+        Article 2 Content:
+        {url2_content}
 
-Article 2 Content:
-{url2_content} (this url belongs to the competitor article or blog)
+        **Word Count Data:**
+        - Article 1 Word Count: {url1_word_count}
+        - Article 2 Word Count: {url2_word_count}
+            
+        Based on your analysis, return the following:
+            
+        1. **Missing SEO Keywords in Article 1**
+           - Identify high-impact SEO keywords that are present in Article 2 but not in Article 1.
+           - These should be real, rankable search terms or phrases users might use on Google.
+           - Prioritize keywords that improve organic visibility.
+            
+        2. **Meta Title Comparison**
+           - Extract and compare the meta titles (or infer if not explicitly available).
+           - Provide suggestions to improve Article 1's meta title if it is weaker.
+            
+        3. **Word Count Comparison**
+           - Count and report the word count of both articles.
+           - Mention if one is significantly longer and whether that benefits SEO.
+            
+        4. **Performance Scores**
+           - For each keyword, provide a realistic performance score based on search volume and competition.
+           - For suggested keywords, compare their performance score with that of the missing keywords.
 
-Based on your analysis, return the following:
-
-1. **Missing SEO Keywords in Article 1**
-   - Identify high-impact SEO keywords that are present in Article 2 but not in Article 1.
-   - These should be real, rankable search terms or phrases users might use on Google.
-   - Prioritize keywords that improve organic visibility.
-
-2. **Meta Title Comparison**
-   - Extract and compare the meta titles (or infer if not explicitly available).
-   - Provide suggestions to improve Article 1's meta title if it is weaker.
-
-3. **Word Count Comparison**
-   - Count and report the word count of both articles.
-   - Mention if one is significantly longer and whether that benefits SEO.
-
-4. **Performance Scores**
-   - For each keyword, provide a realistic performance score based on search volume and competition.
-   - For suggested keywords, compare their performance score with that of the missing keywords.
-
-**Output format**
-Return your response in **valid JSON** strictly matching the following format:
-
-\`\`\`json
-{{
-  "message": {{
-    "meta_info_comparison": {{
-      "url1_title": "string",
-      "url2_title": "string"
-    }},
-    "missing_keywords": ["string"],
-    "suggested_keywords": ["string"],
-    "word_count_comparison": {{
-      "url1_word_count": number,
-      "url2_word_count": number
-    }},
-    "performance": {{
-      "missing_keywords_perf": [number],
-      "suggested_keywords_perf": [number]
-    }}
-  }}
-}}
-\`\`\`
-`
+        5. **Meta Title Enhancement**
+            - Based on your analysis, suggest a stronger, SEO-optimized meta title for Article 1 that:
+            - includes missing or high-ranking keywords
+            - improves on clarity, click appeal, and intent match
+            
+        **Output format**
+        Return your response in **valid JSON** strictly matching the following format:
+            
+        \`\`\`json
+        {{
+          "message": {{
+            "meta_info_comparison": {{
+              "url1_title": "string",
+              "url2_title": "string"
+            }},
+            "missing_keywords": ["string"],
+            "suggested_keywords": ["string"],
+            "word_count_comparison": {{
+              "url1_word_count": number,
+              "url2_word_count": number
+            }},
+            "performance": {{
+              "missing_keywords_perf": [number],
+              "suggested_keywords_perf": [number]
+            }},
+            "improved_meta_title": string
+          }}
+        }}
+        \`\`\`
+      `
     );
 
-    await agent.invoke(
-      {
-        messages: [
-          new HumanMessage(
-            "what missing seo keywords does url1content is missing to compare with url2content"
-          ),
-        ],
-      },
-      { configurable: { thread_id: "23" } }
-    );
-    const modelTools = agentModel.withStructuredOutput(plan);
+    const structuredModelResponse = agentModel.withStructuredOutput(plan);
 
-    const planner = plannerPrompt.pipe(modelTools);
-    // Now it's time to use!
+    const planner = plannerPrompt.pipe(structuredModelResponse);
 
     const result: Plan = await planner.invoke({
+      objective: "Based on your internal knowledge, estimate how impactful each keyword is for SEO (scale 0-100). Higher = better opportunity, and also Analyze the blog's current meta title and suggest improved alternatives with high SEO potential. Consider missing and suggested keywords from the content comparison.",
       url1_content: JSON.stringify(url1content),
       url2_content: JSON.stringify(url2content),
+      url1_word_count: undefined,
+      url2_word_count: undefined
     });
 
     // re-plan step
@@ -194,14 +242,18 @@ Return your response in **valid JSON** strictly matching the following format:
       response: z.string().describe("Response to user"),
     });
 
-    const responseTool: ResponseTool = {
-      type: "function",
-      function: {
-        name: "response",
-        description: "Response to user.",
-        parameters: response,
-      },
-    };
+    const responseTool = tool(() => {}, {
+      name: "response",
+      description: "Response to user.",
+      schema: response,
+    });
+
+    const planTool = tool(() => {}, {
+      name: "plan",
+      description:
+        "This tool is used to plan the steps to follow to extract the missing seo keywords that {userUrl} have in their blogs while comparing with the {competitorUrl} ",
+      schema: plan,
+    });
 
     const replannerPrompt = ChatPromptTemplate.fromTemplate(
       `For the given objective, come up with a simple step by step plan. 
@@ -228,21 +280,6 @@ Return your response in **valid JSON** strictly matching the following format:
       }).bindTools([planTool, responseTool])
     );
 
-    const PlanExecuteState = Annotation.Root({
-      input: Annotation<string>({
-        reducer: (x, y) => y ?? x ?? "",
-      }),
-      plan: Annotation<string[]>({
-        reducer: (x, y) => y ?? x ?? [],
-      }),
-      pastSteps: Annotation<[string, string][]>({
-        reducer: (x, y) => x.concat(y),
-      }),
-      response: Annotation<string>({
-        reducer: (x, y) => y ?? x,
-      }),
-    });
-
     async function executeStep(
       state: typeof PlanExecuteState.State,
       config?: RunnableConfig
@@ -263,6 +300,8 @@ Return your response in **valid JSON** strictly matching the following format:
         objective: state.input,
         url1_content: undefined,
         url2_content: undefined,
+        url1_word_count: undefined,
+        url2_word_count: undefined
       });
       return { plan: plan.missing_keywords };
     }
@@ -307,11 +346,16 @@ Return your response in **valid JSON** strictly matching the following format:
       });
 
     workflow.compile();
+
     res.status(200).json({
       message: result,
     });
   } catch (error) {
-    console.error("error ", error.message);
+    if (error instanceof Error) {
+      console.error("error ", error.message);
+    } else {
+      console.error("error ", error);
+    }
     res.status(500).send("Error");
   }
 }

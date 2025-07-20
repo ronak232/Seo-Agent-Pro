@@ -1,5 +1,5 @@
 const RippleSkeleton = () => (
-  <div className="skeleton-container">
+  <div className="skeleton-container mt-4">
     <div className="skeleton-space-y-6">
       <div className="skeleton-line-base">
         <div className="absolute inset-0 bg-blue-400 animate-ripple-wave opacity-30"></div>

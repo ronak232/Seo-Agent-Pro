@@ -36,9 +36,8 @@ const SEODashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-white bg-white">
+    <div className="min-h-screen text-white bg-white pb-10">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 mb-10">
-        <SEOToolSteps />
         <AnalysisForm
           onAnalyze={handleAnalyze}
           loading={loading}
@@ -50,6 +49,7 @@ const SEODashboard: React.FC = () => {
         {!loading && analysisData && (
           <SEOVisualization analysisData={analysisData} />
         )}
+        <SEOToolSteps />
       </main>
     </div>
   );
