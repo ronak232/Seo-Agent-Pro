@@ -6,7 +6,7 @@ dotenv.config();
 export const agentTools = new TavilyExtract({
   extractDepth: "advanced",
   includeImages: false,
-  
+  format:"text"
 });
 
 export const agentModel = new ChatGoogleGenerativeAI({

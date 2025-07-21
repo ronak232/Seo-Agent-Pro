@@ -22,7 +22,7 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, loading, error }) => {
               <Sparkles className="w-4 h-4" /> AI-Powered Analysis
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-600 leading-tight">
             Analyze Any Content Instantly
           </h1>
         </div>

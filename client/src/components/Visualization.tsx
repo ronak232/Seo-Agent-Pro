@@ -297,7 +297,10 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: "top", labels: { color: "#9ca3af" } },
+              legend: {
+                position: "top",
+                labels: { color: "#9ca3af", font: { size: 12 } },
+              },
               title: {
                 display: true,
                 text: "SEO Performance Comparison",
@@ -352,7 +355,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
               <div className="tooltip">
                 <Info className="h-2.5 w-2.5" />
                 <p className="tooltip-content">
-                  Suggested keywords to boost your reach.
+                  Improved SEO Meta Title for search ranking
                 </p>
               </div>
             </div>

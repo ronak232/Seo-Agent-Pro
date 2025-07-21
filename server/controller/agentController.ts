@@ -14,7 +14,7 @@ import { agentModel, agentTools } from "../services/services";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Request, Response } from "express";
 import { tool } from "@langchain/core/tools";
-import sanitizeHtml from 'sanitize-html';
+import sanitizeHtml from "sanitize-html";
 
 interface Plan {
   missing_keywords: string[];
@@ -34,6 +34,26 @@ interface Plan {
   improved_meta_title: string;
 }
 
+/**
+ * Handles the SEO comparison between two articles by analyzing their content, extracting keywords, comparing meta titles, word counts, and suggesting improvements.
+ *
+ * @param req - Express request object containing `userUrl` and `competitorUrl` in the body.
+ * @param res - Express response object used to send the analysis result or error.
+ * @returns A Promise that resolves to void. Responds with a JSON object containing the SEO comparison results or an error message.
+ *
+ * The function performs the following steps:
+ * 1. Validates input URLs.
+ * 2. Fetches and processes the HTML content of both URLs.
+ * 3. Counts words in each article after sanitizing HTML.
+ * 4. Uses an agent and planning workflow to:
+ *    - Extract missing and suggested SEO keywords.
+ *    - Compare meta titles and word counts.
+ *    - Score keyword performance.
+ *    - Suggest an improved meta title for the user's article.
+ * 5. Returns a structured JSON response with the analysis.
+ * 6. Handles and logs errors, responding with HTTP 500 on failure.
+ */
+
 export async function agent(req: Request, res: Response): Promise<void> {
   const { userUrl, competitorUrl } = req.body;
   try {
@@ -50,8 +70,44 @@ export async function agent(req: Request, res: Response): Promise<void> {
       }),
     ]);
 
+    const wordCountSchema = z.object({
+      htmlContent: z.string().describe("The HTML content of the webpage."),
+    });
+
+    const wordCounterTool = tool(
+      async ({ htmlContent }) => {
+        // 1. Sanitize the HTML to remove scripts, styles, and unwanted tags
+        const cleanText = sanitizeHtml(htmlContent, {
+          allowedTags: [
+            "section",
+            "article",
+            "div",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+          ],
+          allowedAttributes: {},
+        });
+
+        // 2. A more robust way to count words, handling various whitespace
+        const words = cleanText.match(/\b[\w'-]+\b/g) || [];
+        return words.length.toString();
+      },
+      {
+        name: "word_counter",
+        description:
+          "Accurately counts the words in a given HTML content by first cleaning it.",
+        schema: wordCountSchema,
+      }
+    );
+
     // Initialize memory to persist state between graph runs
     const agentCheckpointer = new MemorySaver();
+
     const agent = createReactAgent({
       llm: agentModel,
       tools: [agentTools],
@@ -69,43 +125,6 @@ export async function agent(req: Request, res: Response): Promise<void> {
       { configurable: { thread_id: "23" } }
     );
 
-    const wordCountSchema = z.object({
-      htmlContent: z.string().describe("The HTML content of the webpage."),
-    });
-
-    const wordCounterTool = tool(
-      async ({ htmlContent }) => {
-        // 1. Sanitize the HTML to remove scripts, styles, and unwanted tags
-        const cleanText = sanitizeHtml(htmlContent, {
-          allowedTags: [
-            "p",
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "li",
-            "strong",
-            "em",
-            "b",
-            "i",
-            "u",
-          ],
-          allowedAttributes: {},
-        });
-
-        // 2. A more robust way to count words, handling various whitespace
-        const words = cleanText.match(/\b\w+\b/g) || [];
-        return words.length.toString();
-      },
-      {
-        name: "word_counter",
-        description:
-          "Accurately counts the words in a given HTML content by first cleaning it.",
-        schema: wordCountSchema,
-      }
-    );
     /**
      * Represents the state for a plan execution process, including input, plan steps, past steps, and response.
      *
@@ -192,9 +211,11 @@ export async function agent(req: Request, res: Response): Promise<void> {
            - For suggested keywords, compare their performance score with that of the missing keywords.
 
         5. **Meta Title Enhancement**
-            - Based on your analysis, suggest a stronger, SEO-optimized meta title for Article 1 that:
-            - includes missing or high-ranking keywords
-            - improves on clarity, click appeal, and intent match
+            - Based on your analysis, suggest an SEO-optimized meta title for Article 1 that:
+                - includes 1-2 top missing/suggested keywords (from the performance score)
+                - improves click-through appeal
+                - is within 60-70 characters
+                - matches the intent of the article better than the original
             
         **Output format**
         Return your response in **valid JSON** strictly matching the following format:
@@ -226,14 +247,6 @@ export async function agent(req: Request, res: Response): Promise<void> {
     const structuredModelResponse = agentModel.withStructuredOutput(plan);
 
     const planner = plannerPrompt.pipe(structuredModelResponse);
-
-    const result: Plan = await planner.invoke({
-      objective: "Based on your internal knowledge, estimate how impactful each keyword is for SEO (scale 0-100). Higher = better opportunity, and also Analyze the blog's current meta title and suggest improved alternatives with high SEO potential. Consider missing and suggested keywords from the content comparison.",
-      url1_content: JSON.stringify(url1content),
-      url2_content: JSON.stringify(url2content),
-      url1_word_count: undefined,
-      url2_word_count: undefined
-    });
 
     // re-plan step
     // why - if the comparison lacks details between the data or content we again let agent to get more deep insight of missing info or any info between your blog and competetior blog
@@ -277,7 +290,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
     const replanner = replannerPrompt.pipe(
       new ChatGoogleGenerativeAI({
         model: "gemini-2.5-flash",
-      }).bindTools([planTool, responseTool])
+      }).bindTools([planTool, responseTool, wordCounterTool])
     );
 
     async function executeStep(
@@ -298,10 +311,10 @@ export async function agent(req: Request, res: Response): Promise<void> {
     ): Promise<Partial<typeof PlanExecuteState.State>> {
       const plan: Plan = await planner.invoke({
         objective: state.input,
-        url1_content: undefined,
-        url2_content: undefined,
+        url1_content: JSON.stringify(url1content),
+        url2_content: JSON.stringify(url2content),
         url1_word_count: undefined,
-        url2_word_count: undefined
+        url2_word_count: undefined,
       });
       return { plan: plan.missing_keywords };
     }
@@ -332,6 +345,15 @@ export async function agent(req: Request, res: Response): Promise<void> {
     function shouldEnd(state: typeof PlanExecuteState.State): "true" | "false" {
       return state.response ? "true" : "false";
     }
+
+    const result: Plan = await planner.invoke({
+      objective:
+        "Based on your internal knowledge, estimate how impactful each keyword is for SEO (scale 0-100). Higher = better opportunity, and also Analyze the blog's current meta title and suggest improved alternatives with high SEO potential. Consider missing and suggested keywords from the content comparison.",
+      url1_content: url1content,
+      url2_content: url2content,
+      url1_word_count: undefined,
+      url2_word_count: undefined,
+    });
 
     const workflow = new StateGraph(PlanExecuteState)
       .addNode("planner", planStep)
