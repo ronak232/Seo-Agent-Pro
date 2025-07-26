@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useRef, useState } from "react";
 import AnalysisForm from "../components/Form";
 import SEOVisualization from "../components/Visualization";
 import type { ApiResponse } from "../types/type"; // export that interface if you want reuse
@@ -10,8 +10,14 @@ const SEODashboard: React.FC = () => {
   const [analysisData, setAnalysisData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const controllerRef = useRef<AbortController | null>(null);
 
-  const handleAnalyze = async (userUrl: string, competitorUrl: string) => {
+  const handleAnalyze = async (
+    userUrl: string,
+    competitorUrl: string,
+    model: string
+  ) => {
+    console.log("url model", userUrl, model);
     if (!userUrl || !competitorUrl) {
       setError("Please enter both URLs to compare");
       return;
@@ -19,11 +25,20 @@ const SEODashboard: React.FC = () => {
     setLoading(true);
     setError(null);
 
+    controllerRef.current = new AbortController();
+
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/upload", {
-        userUrl,
-        competitorUrl,
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/v1/upload",
+        {
+          userUrl,
+          competitorUrl,
+          model,
+        },
+        {
+          signal: controllerRef.current.signal,
+        }
+      );
       const data = await res.data;
       setAnalysisData(data);
       setLoading(false);
@@ -35,6 +50,12 @@ const SEODashboard: React.FC = () => {
     }
   };
 
+  const handleCancelRequest = () => {
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+  };
+
   return (
     <div className="min-h-screen text-white bg-white pb-10">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 mb-10">
@@ -42,6 +63,7 @@ const SEODashboard: React.FC = () => {
           onAnalyze={handleAnalyze}
           loading={loading}
           error={error}
+          onCancelRequest={handleCancelRequest}
         />
 
         {loading && <RippleSkeleton />}

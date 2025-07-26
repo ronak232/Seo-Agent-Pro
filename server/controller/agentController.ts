@@ -10,7 +10,7 @@ import { RunnableConfig } from "@langchain/core/runnables";
 import { HumanMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { z } from "zod";
-import { agentModel, agentTools } from "../services/services";
+import { agentTools, getModelName } from "../services/services";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Request, Response } from "express";
 import { tool } from "@langchain/core/tools";
@@ -55,7 +55,16 @@ interface Plan {
  */
 
 export async function agent(req: Request, res: Response): Promise<void> {
-  const { userUrl, competitorUrl } = req.body;
+  const { userUrl, competitorUrl, model } = req.body;
+
+  console.log("user selected model ", model)
+  
+  const getCurrentModel =
+    getModelName(model) ??
+    new ChatGoogleGenerativeAI({
+      model: "gemini-embedding-001",
+    });
+
   try {
     if (!userUrl || !competitorUrl) {
       return;
@@ -109,7 +118,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
     const agentCheckpointer = new MemorySaver();
 
     const agent = createReactAgent({
-      llm: agentModel,
+      llm: getCurrentModel,
       tools: [agentTools],
       checkpointSaver: agentCheckpointer,
     });
@@ -244,7 +253,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
       `
     );
 
-    const structuredModelResponse = agentModel.withStructuredOutput(plan);
+    const structuredModelResponse = getCurrentModel?.withStructuredOutput(plan);
 
     const planner = plannerPrompt.pipe(structuredModelResponse);
 
@@ -298,7 +307,10 @@ export async function agent(req: Request, res: Response): Promise<void> {
       config?: RunnableConfig
     ): Promise<Partial<typeof PlanExecuteState.State>> {
       const task: string = state.plan[0];
-      const { text }: { text: string } = await agentModel.invoke(task, config);
+      const { text }: { text: string } = await getCurrentModel.invoke(
+        task,
+        config
+      );
 
       return {
         pastSteps: [[task, text[text.length - 1]]],

@@ -1,17 +1,38 @@
 import React, { useState } from "react";
 import { Search, AlertCircle, Sparkles } from "lucide-react";
+import { CircleStop } from "lucide-react";
+import { Cpu } from "lucide-react";
+import { ArrowBigUp } from "lucide-react";
+import { modelsProvider } from "@/ai/modelProviders";
+import { getSelectedModel } from "@/helper/selectModels";
 
 interface Props {
-  onAnalyze: (url1: string, url2: string) => void;
+  onAnalyze: (url1: string, url2: string, model: string) => void;
   loading: boolean;
   error: string | null;
+  onCancelRequest: () => void;
 }
 
-const AnalysisForm: React.FC<Props> = ({ onAnalyze, loading, error }) => {
+const AnalysisForm: React.FC<Props> = ({
+  onAnalyze,
+  loading,
+  error,
+  onCancelRequest,
+}) => {
   const [url1, setUrl1] = useState("");
   const [url2, setUrl2] = useState("");
+  const [model, setModel] = useState("");
 
-  const submit = () => onAnalyze(url1.trim(), url2.trim()); //
+  const handleChangeModel = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setModel(e.target.value);
+  };
+
+  const submit = () => {
+    const selectedModel = getSelectedModel(model);
+    onAnalyze(url1.trim(), url2.trim(), selectedModel);
+  }; //
 
   return (
     <>
@@ -69,13 +90,46 @@ const AnalysisForm: React.FC<Props> = ({ onAnalyze, loading, error }) => {
           </div>
         )}
 
-        <button
-          onClick={submit}
-          disabled={loading || !url1 || !url2}
-          className="mt-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:transform-none"
-        >
-          {loading ? "Analyzing Blogs..." : "Compare Blogs"}
-        </button>
+        <div className="flex gap-2 items-center mt-3.5 justify-self-end">
+          <div className="flex gap-1.5 items-center bg-sky-800 rounded-lg p-1">
+            <Cpu color="#ffffff" size="15" />
+            <select
+              tabIndex={0}
+              className="dropdown-content menu rounded-box z-1 w-full p-0 focus:outline-0 text-[12px]"
+              onChange={handleChangeModel}
+            >
+              {modelsProvider.map((item) => {
+                return (
+                  <option
+                    key={item.modelName}
+                    className="sm:text-[10px] cursor-pointer text-base-100 flex flex-col"
+                    value={item.modelName}
+                  >
+                    {item.modelName}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          {!loading ? (
+            <button
+              className="bg-black cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-1 py-1 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+              type="submit"
+              disabled={loading || !url1 || !url2}
+              onClick={submit}
+            >
+              <ArrowBigUp color="#ffffff" size="19" />
+            </button>
+          ) : (
+            <button
+              onClick={onCancelRequest}
+              type="submit"
+              className="bg-black cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-1 py-1 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+            >
+              <CircleStop color="#ffffff" size="15" />
+            </button>
+          )}
+        </div>
       </div>
     </>
   );
