@@ -26,6 +26,7 @@ import {
   PieController,
 } from "chart.js";
 import type { ApiResponse } from "../types/type";
+import AIDisclaimer from "./Disclaimer";
 // import { TbTooltip } from "react-icons/tb";
 
 interface Props {
@@ -324,7 +325,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
   console.log("api response ", analysisData);
 
   return (
-    <div className="flex flex-col gap-3 mt-7 bg-gray-900 p-3 rounded-lg">
+    <div className="flex flex-col gap-3 mt-7 bg-transparent p-3 rounded-lg">
       {/* Blog Titles */}
       <h2 className="text-2xl text-center pt-1.5 p-1.5 text-sky-200 font-semibold">
         Your Blog Performance
@@ -460,6 +461,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
             clr="green"
           />
         </div>
+        <AIDisclaimer />
       </div>
     </div>
   );

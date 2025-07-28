@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import { TavilyExtract } from "@langchain/tavily";
-import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { ChatAnthropic } from "@langchain/anthropic";
+import {
+  ChatGoogleGenerativeAI,
+  GoogleGenerativeAIEmbeddings,
+} from "@langchain/google-genai";
+import { TaskType } from "@google/generative-ai";
+import { ChatGroq } from "@langchain/groq";
 dotenv.config();
 
 export const agentTools = new TavilyExtract({
@@ -24,22 +28,23 @@ export function getModelName(model: string) {
       model: "gemini-2.5-pro",
       tags: ["Blogs", "Articles", "Documentations"],
     });
-  } else if (model === "claude-opus-4") {
-    agentModel = new ChatAnthropic({
-      model: "claude-4-opus-20250514",
+  } else if (model === "Meta-llama-4") {
+    agentModel = new ChatGroq({
+      model: "meta-llama/llama-4-maverick-17b-128e-instruct",
       temperature: 0,
     });
+  } else if (model === "Moonshot-kimi") {
+    agentModel = new ChatGroq({
+      model: "moonshotai/kimi-k2-instruct",
+      temperature: 0,
+      tags: ["Blogs", "Articels"],
+    });
   } else {
-    agentModel = new GoogleGenerativeAIEmbeddings({
-      model: "gemini-embedding-001",
+    agentModel = new ChatGoogleGenerativeAI({
+      temperature: 0,
+      model: "gemini-2.0-flash",
+      tags: ["Blogs", "Articles", "Documentations"],
     });
   }
-
   return agentModel;
 }
-
-// export const agentModel = new ChatGoogleGenerativeAI({
-//   temperature: 0,
-//   model: "gemini-2.5-flash",
-//   tags: ["Blogs", "Articles", "Documentations"],
-// });

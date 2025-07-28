@@ -1,21 +1,31 @@
 // helper list for model choosing
 export const modelsProvider = [
   {
-    modelName: "gemini-embedding-001",
-    thinking: "non-thinking",
-    desc: "Google Advanced searching",
-    category: "Advance content-extraction model",
-  },
-  {
-    modelName: "gemini-2.5-flash",
+    modelName: "Gemini-2.5-flash",
+    model: "gemini-2.5-flash",
     thinking: "default",
     desc: "Gemini Latest thinking model",
-    catergory: "Advanced Model",
+    category: "Thinking Model",
   },
   {
-    modelName: "gemini-2.5-pro",
+    modelName: "Gemini-2.5-pro",
+    model: "gemini-2.5-pro",
     thinking: "default",
-    desc: "Gemini Advanced thinking model",
-    catergory: "Ultra advanced Model",
+    desc: "Gemini Advance thinking model",
+    category: "Thinking Model",
+  },
+  {
+    modelName: "Meta-llama-4",
+    model: "meta-llama/llama-4-maverick-17b-128e-instruct",
+    thinking: "Exp.",
+    desc: "Meta Experimental Model",
+    category: "Exp",
+  },
+  {
+    modelName: "Moonshot-kimi-k2",
+    model: "moonshotai/kimi-k2-instruct",
+    thinking: "no",
+    desc: "Moonshot AI's advance Model",
+    category: "Non-Thinking Model"
   },
 ];

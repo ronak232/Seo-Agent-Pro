@@ -16,6 +16,7 @@
     "@langchain/community": "^0.3.47",
     "@langchain/core": "^0.3.62",
     "@langchain/google-genai": "^0.2.14",
+    "@langchain/groq": "^0.2.3",
     "@langchain/langgraph": "^0.3.6",
     "@langchain/openai": "^0.5.18",
     "@langchain/tavily": "^0.1.4",

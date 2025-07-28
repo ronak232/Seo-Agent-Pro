@@ -157,7 +157,7 @@
   border-radius: 0.75rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #374151;
+  /* border: 1px solid #374151; */
   color: #fff;
 }
 
@@ -258,8 +258,20 @@
 .float-animation {
   animation: float 6s ease-in-out infinite;
 }
-
 .landing-page {
   font-family: "Inter", sans-serif;
   background-size: 2rem 2rem;
 }
+
+.models .models-btn {
+  font-family: var(--font-sans);
+}
+.models .model-options {
+  width: 40rem;
+  max-width: 300px !important;
+  background: #2e2d2d;
+  border: 0;
+  color: #ffffff;
+  z-index: 1000;
+}
+

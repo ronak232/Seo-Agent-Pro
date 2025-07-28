@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { Search, AlertCircle, Sparkles } from "lucide-react";
 import { CircleStop } from "lucide-react";
 import { Cpu } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { ArrowBigUp } from "lucide-react";
 import { modelsProvider } from "@/ai/modelProviders";
 import { getSelectedModel } from "@/helper/selectModels";
+import {
+  Listbox,
+  ListboxOption,
+  ListboxOptions,
+  ListboxButton,
+} from "@headlessui/react";
 
 interface Props {
   onAnalyze: (url1: string, url2: string, model: string) => void;
@@ -21,17 +28,11 @@ const AnalysisForm: React.FC<Props> = ({
 }) => {
   const [url1, setUrl1] = useState("");
   const [url2, setUrl2] = useState("");
-  const [model, setModel] = useState("");
-
-  const handleChangeModel = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setModel(e.target.value);
-  };
+  const [selectedModel, setSelectedModel] = useState(modelsProvider[0]);
 
   const submit = () => {
-    const selectedModel = getSelectedModel(model);
-    onAnalyze(url1.trim(), url2.trim(), selectedModel);
+    const currentModel = getSelectedModel(selectedModel?.model);
+    onAnalyze(url1.trim(), url2.trim(), currentModel);
   }; //
 
   return (
@@ -91,25 +92,38 @@ const AnalysisForm: React.FC<Props> = ({
         )}
 
         <div className="flex gap-2 items-center mt-3.5 justify-self-end">
-          <div className="flex gap-1.5 items-center bg-sky-800 rounded-lg p-1">
+          <div className="bg-gray-700 rounded-lg p-1 flex gap-2 items-center pt-1 pb-1 border-2 border-gray-400 relative models">
             <Cpu color="#ffffff" size="15" />
-            <select
-              tabIndex={0}
-              className="dropdown-content menu rounded-box z-1 w-full p-0 focus:outline-0 text-[12px]"
-              onChange={handleChangeModel}
-            >
-              {modelsProvider.map((item) => {
-                return (
-                  <option
+            <Listbox value={selectedModel} onChange={setSelectedModel}>
+              <ListboxButton className="text-[12px] capitalize font-bold min-w-32 w-full text-left flex gap-1.5 items-center justify-evenly focus:outline-0 cursor-pointer">
+                {selectedModel.modelName}
+                <ChevronsUpDown size="15" className="models-btn" />
+              </ListboxButton>
+              <ListboxOptions className=" flex flex-col gap-1.5 absolute top-8 md:top-10 -right-5 z-50 mt-1 bg-white border-2 border-gray-200 rounded-lg max-h-56 overflow-auto model-options focus-within:outline-0 p-4 shadow-lg shadow-zinc-500">
+                <p className="text-gray-500 text-[10px] border-b-[1px] mb-1.5">
+                  All Models
+                </p>
+                {modelsProvider.map((item) => (
+                  <ListboxOption
                     key={item.modelName}
-                    className="sm:text-[10px] cursor-pointer text-base-100 flex flex-col"
-                    value={item.modelName}
+                    value={item}
+                    className="hover:bg-gray-500 cursor-pointer border-b-[1px] border-gray-400 p-1"
                   >
-                    {item.modelName}
-                  </option>
-                );
-              })}
-            </select>
+                    <div>
+                      <span className="font-semibold text-white text-[12px]">
+                        {item.modelName}
+                      </span>
+                      <div className="badge badge-xs ms-1">
+                        {item.category === "" ? "" : item.category}
+                      </div>
+                      <span className="block text-xs text-gray-400">
+                        {item.desc}
+                      </span>
+                    </div>
+                  </ListboxOption>
+                ))}
+              </ListboxOptions>
+            </Listbox>
           </div>
           {!loading ? (
             <button

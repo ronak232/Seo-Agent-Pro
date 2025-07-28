@@ -1,6 +1,6 @@
 import "./App.css";
 import Navbar from "./components/Navbar";
-import SEOFooter from "./components/SEOFooter";
+import SEOFooter from "./components/AppFooter";
 import SEODashboard from "./pages/DisplayVisual";
 import Home from "./pages/Home";
 import { Routes, Route } from "react-router-dom";

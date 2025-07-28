@@ -81,7 +81,7 @@ function SEOToolFeatures() {
     },
   ];
   return (
-    <div className="max-w-7xl mx-auto bg-[#191818] pe-2 pb-10 pt-10 ps-2 text-white flex flex-col gap-5">
+    <div className="max-w-7xl mx-auto bg-transparent pe-2 pb-10 pt-10 ps-2 text-white flex flex-col gap-5">
       <div className="text-center">
         <div className="inline-flex items-center gap-2 bg-purple-500/20 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
           <Zap className="w-5 h-5 text-purple-400" />
