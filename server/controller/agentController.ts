@@ -88,12 +88,6 @@ export async function agent(req: Request, res: Response): Promise<void> {
       }),
     ]);
 
-    const keyInfo = generateFinalScoreAndAnalysis(
-      url2content.raw_content,
-      url2content.raw_content
-    );
-    console.log("keyinfo ", keyInfo);
-
     const wordCountSchema = z.object({
       htmlContent: z.string().describe("The HTML content of the webpage."),
     });
@@ -142,7 +136,10 @@ export async function agent(req: Request, res: Response): Promise<void> {
       {
         messages: [
           new HumanMessage(
-            "Analyze the following article text. Extract two things: 1. A list of the top 25 most relevant SEO keywords and entities. 2. A list of the main topics and sub-topics discussed.The remaining ones are the missing keywords."
+            `You are good agent Analyze the following article text. Extract three things: 
+            1.You'll recieve markdown extract text from tags like <section></section> or <article></article>
+            2. A list of the top 25 most relevant SEO keywords and entities. 
+            3. A list of the main topics and sub-topics discussed.The remaining ones are the missing keywords.`
           ),
         ],
       },
@@ -407,15 +404,4 @@ export async function agent(req: Request, res: Response): Promise<void> {
     }
     res.status(500).send("Error");
   }
-}
-
-// helper function extract keyinfo...
-
-async function generateFinalScoreAndAnalysis(userContent, peerContent) {
-  const textEmbedding = new GoogleGenerativeAIEmbeddings({
-    model: "gemini-embedding-001",
-    title: "keywords-extract",
-  });
-
-  await textEmbedding;
 }
