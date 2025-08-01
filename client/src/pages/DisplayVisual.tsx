@@ -43,8 +43,10 @@ const SEODashboard: React.FC = () => {
       setAnalysisData(data);
       setLoading(false);
     } catch (e) {
-      console.error("some ", e.message);
-      setError(e instanceof Error ? e.message : "Unexpected error");
+      if (e instanceof Error) {
+        console.error("some ", e.message);
+        setError(e instanceof Error ? e.message : "Unexpected error");
+      }
     } finally {
       setLoading(false);
     }
