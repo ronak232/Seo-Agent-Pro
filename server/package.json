@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx watch server.ts",
-    "start:watch": "nodemon server.ts",
+    "start:watch": "nodemon ./dist/server.js",
     "build": "tsc"
   },
   "author": "",
