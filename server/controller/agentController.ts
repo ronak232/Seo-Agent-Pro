@@ -13,6 +13,7 @@ import { z } from "zod";
 import { agentTools, getModelName } from "../services/services";
 import {
   ChatGoogleGenerativeAI,
+  GoogleGenerativeAIEmbeddings,
 } from "@langchain/google-genai";
 import { Request, Response } from "express";
 import { tool } from "@langchain/core/tools";
@@ -87,6 +88,12 @@ export async function agent(req: Request, res: Response): Promise<void> {
       }),
     ]);
 
+    const keyInfo = generateFinalScoreAndAnalysis(
+      url2content.raw_content,
+      url2content.raw_content
+    );
+    console.log("keyinfo ", keyInfo);
+
     const wordCountSchema = z.object({
       htmlContent: z.string().describe("The HTML content of the webpage."),
     });
@@ -135,7 +142,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
       {
         messages: [
           new HumanMessage(
-            "Extract all keywords from Article 2. Then, remove any keyword already present in Article 1. The remaining ones are the missing keywords."
+            "Analyze the following article text. Extract two things: 1. A list of the top 25 most relevant SEO keywords and entities. 2. A list of the main topics and sub-topics discussed.The remaining ones are the missing keywords."
           ),
         ],
       },
@@ -265,8 +272,14 @@ export async function agent(req: Request, res: Response): Promise<void> {
 
     const planner = plannerPrompt.pipe(structuredModelResponse);
 
-    // re-plan step
-    // why - if the comparison lacks details between the data or content we again let agent to get more deep insight of missing info or any info between your blog and competetior blog
+    const result: Plan = await planner.invoke({
+      objective:
+        "Based on your internal knowledge, estimate how impactful each keyword is for SEO (scale 0-100). Higher = better opportunity, and also Analyze the blog's current meta title and suggest improved alternatives with high SEO Score. Consider missing and suggested keywords from the content comparison.",
+      url1_content: url1content,
+      url2_content: url2content,
+      url1_word_count: undefined,
+      url2_word_count: undefined,
+    });
 
     const response = z.object({
       response: z.string().describe("Response to user"),
@@ -284,6 +297,9 @@ export async function agent(req: Request, res: Response): Promise<void> {
         "This tool is used to plan the steps to follow to extract the missing seo keywords that {userUrl} have in their blogs while comparing with the {competitorUrl} ",
       schema: plan,
     });
+
+    // re-plan step
+    // what - if the comparison lacks details between the data or content we again let agent to get more deep insight of missing info or any info between your blog and competetior blog
 
     const replannerPrompt = ChatPromptTemplate.fromTemplate(
       `For the given objective, come up with a simple step by step plan. 
@@ -366,15 +382,6 @@ export async function agent(req: Request, res: Response): Promise<void> {
       return state.response ? "true" : "false";
     }
 
-    const result: Plan = await planner.invoke({
-      objective:
-        "Based on your internal knowledge, estimate how impactful each keyword is for SEO (scale 0-100). Higher = better opportunity, and also Analyze the blog's current meta title and suggest improved alternatives with high SEO potential. Consider missing and suggested keywords from the content comparison.",
-      url1_content: url1content,
-      url2_content: url2content,
-      url1_word_count: undefined,
-      url2_word_count: undefined,
-    });
-
     const workflow = new StateGraph(PlanExecuteState)
       .addNode("planner", planStep)
       .addNode("agent", executeStep)
@@ -400,4 +407,15 @@ export async function agent(req: Request, res: Response): Promise<void> {
     }
     res.status(500).send("Error");
   }
+}
+
+// helper function extract keyinfo...
+
+async function generateFinalScoreAndAnalysis(userContent, peerContent) {
+  const textEmbedding = new GoogleGenerativeAIEmbeddings({
+    model: "gemini-embedding-001",
+    title: "keywords-extract",
+  });
+
+  await textEmbedding;
 }

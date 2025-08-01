@@ -11,7 +11,7 @@ dotenv.config();
 export const agentTools = new TavilyExtract({
   extractDepth: "advanced",
   includeImages: false,
-  format: "text",
+  format: "markdown",
 });
 
 export function getModelName(model: string) {
