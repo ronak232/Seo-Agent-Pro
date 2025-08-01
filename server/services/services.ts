@@ -2,9 +2,7 @@ import dotenv from "dotenv";
 import { TavilyExtract } from "@langchain/tavily";
 import {
   ChatGoogleGenerativeAI,
-  GoogleGenerativeAIEmbeddings,
 } from "@langchain/google-genai";
-import { TaskType } from "@google/generative-ai";
 import { ChatGroq } from "@langchain/groq";
 dotenv.config();
 
