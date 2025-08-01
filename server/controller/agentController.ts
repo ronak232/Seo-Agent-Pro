@@ -88,12 +88,6 @@ export async function agent(req: Request, res: Response): Promise<void> {
       }),
     ]);
 
-    const keyInfo = generateFinalScoreAndAnalysis(
-      url2content.raw_content,
-      url2content.raw_content
-    );
-    console.log("keyinfo ", keyInfo);
-
     const wordCountSchema = z.object({
       htmlContent: z.string().describe("The HTML content of the webpage."),
     });
