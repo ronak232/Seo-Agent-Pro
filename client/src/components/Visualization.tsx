@@ -26,7 +26,8 @@ import {
   PieController,
 } from "chart.js";
 import type { ApiResponse } from "../types/type";
-import { TbTooltip } from "react-icons/tb";
+import AIDisclaimer from "./Disclaimer";
+// import { TbTooltip } from "react-icons/tb";
 
 interface Props {
   analysisData: ApiResponse | null;
@@ -164,6 +165,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
                 borderColor: ["#d97706", "#059669"],
                 borderWidth: 2,
                 label: "Missing Keywords",
+                barPercentage: 0.4,
               },
             ],
           },
@@ -205,6 +207,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
                 borderWidth: 2,
                 label: "Suggested Keywords",
                 yAxisID: "Performance",
+                barPercentage: 0.4,
               },
             ],
           },
@@ -237,7 +240,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
           yourScore + analysisData?.message?.suggested_keywords?.length * 3;
 
         new ChartJS(scoreCtx, {
-          type: "doughnut",
+          type: "bar",
           data: {
             labels: [
               "Content Length",
@@ -295,7 +298,10 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: "top", labels: { color: "#9ca3af" } },
+              legend: {
+                position: "top",
+                labels: { color: "#9ca3af", font: { size: 12 } },
+              },
               title: {
                 display: true,
                 text: "SEO Performance Comparison",
@@ -319,8 +325,11 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
   console.log("api response ", analysisData);
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-3 mt-7 bg-transparent p-3 rounded-lg">
       {/* Blog Titles */}
+      <h2 className="text-2xl text-center pt-1.5 p-1.5 text-sky-200 font-semibold">
+        Your Blog Performance
+      </h2>
       <div className="bg-gray-800 bg-opacity-50 backdrop-blur-lg rounded-xl p-6 border border-gray-700">
         <h3 className="text-xl font-semibold mb-4 flex items-center">
           <FileText className="w-5 h-5 mr-2 text-green-400" />
@@ -341,10 +350,23 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
               {analysisData?.message?.meta_info_comparison?.url2_title}
             </p>
           </div>
+          <div className="flex gap-1 flex-col">
+            <div className="flex items-center gap-1">
+              <p className="text-sm">Improved Meta Title</p>
+              <div className="tooltip">
+                <Info className="h-2.5 w-2.5" />
+                <p className="tooltip-content">
+                  Improved SEO Meta Title for search ranking
+                </p>
+              </div>
+            </div>
+            <p className="bg-orange-400 rounded-sm ps-1 text-sm pt-0.5 pb-0.5">
+              {analysisData?.message.improved_meta_title}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Charts */}
       <div className="bg-gray-800 bg-opacity-50 rounded-xl p-6 border border-gray-700">
         <div className="h-64">
           <div className="flex items-center justify-center gap-1 flex-row-reverse">
@@ -439,6 +461,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
             clr="green"
           />
         </div>
+        <AIDisclaimer />
       </div>
     </div>
   );

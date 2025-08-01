@@ -14,5 +14,6 @@ export interface ApiResponse {
       missing_keywords_perf: string[];
       suggested_keywords_perf: string[];
     };
+    improved_meta_title: string;
   };
 }

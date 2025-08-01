@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function Navbar() {
   return (
     <>
-      <header className="bg-opacity-50 backdrop-blur-lg w-full fixed top-0 left-0 right-0 h-16 z-40 bg-white/30 shadow-md border-b border-white/20">
+      <header className="bg-opacity-50 w-full fixed top-0 left-0 right-0 h-16 z-40 bg-white shadow-md border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center">
             <Link to={"/home"}>
