@@ -408,14 +408,3 @@ export async function agent(req: Request, res: Response): Promise<void> {
     res.status(500).send("Error");
   }
 }
-
-// helper function extract keyinfo...
-
-async function generateFinalScoreAndAnalysis(userContent, peerContent) {
-  const textEmbedding = new GoogleGenerativeAIEmbeddings({
-    model: "gemini-embedding-001",
-    title: "keywords-extract",
-  });
-
-  await textEmbedding;
-}
