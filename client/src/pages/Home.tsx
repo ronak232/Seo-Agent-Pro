@@ -1,4 +1,5 @@
 import SEOToolFeatures from "@/components/SEOToolFeatures";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -176,12 +177,12 @@ function Home() {
               </p>
 
               <div className="mt-4">
-                <a
-                  href="/seo-tool"
+                <Link
+                  to="/seo-tool"
                   className="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
                 >
                   Start Your Free Analysis
-                </a>
+                </Link>
               </div>
             </div>
           </div>
