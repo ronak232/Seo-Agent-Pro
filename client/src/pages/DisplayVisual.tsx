@@ -5,6 +5,7 @@ import type { ApiResponse } from "../types/type"; // export that interface if yo
 import axios from "axios";
 import RippleSkeleton from "../components/Skeleton";
 import SEOToolSteps from "@/components/SEOToolSteps";
+import { baseUrl } from "@/constant/constant";
 
 const SEODashboard: React.FC = () => {
   const [analysisData, setAnalysisData] = useState<ApiResponse | null>(null);
@@ -29,7 +30,7 @@ const SEODashboard: React.FC = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/v1/upload",
+        `${baseUrl}/api/v1/upload`,
         {
           userUrl,
           competitorUrl,
