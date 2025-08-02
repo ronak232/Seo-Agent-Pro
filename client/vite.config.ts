@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   const base_url = env.VITE_BASE_URL;
 
   return {
-    base: "./",
+    base: "/Seo-Agent-Pro/",
     server: {
       headers: {
         "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
