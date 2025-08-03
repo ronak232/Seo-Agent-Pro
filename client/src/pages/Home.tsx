@@ -177,11 +177,10 @@ function Home() {
               </p>
 
               <div className="mt-4">
-                <Link
-                  to="/seo-tool"
-                  className="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-                >
-                  Start Your Free Analysis
+                <Link to={"/seo-tool"} className="inline-block">
+                  <button className="px-4 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition cursor-pointer">
+                    Start Your Free Analysis
+                  </button>
                 </Link>
               </div>
             </div>
