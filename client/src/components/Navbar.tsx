@@ -8,7 +8,11 @@ function Navbar() {
           <div className="flex items-center">
             <Link to={"/home"}>
               {/* <TrendingUp className="w-8 h-8 text-blue-400 mr-3" /> */}
-              <img className="w-20 h-10" src="/images/seo-logo.png" alt="" />
+              <img
+                className="w-20 h-10"
+                src="https://res.cloudinary.com/dwc1sjsvj/image/upload/v1754214545/f1pjzukibxzlncqtazw5.png"
+                alt="seo-logo"
+              />
             </Link>
 
             <h1 className="text-sm md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">

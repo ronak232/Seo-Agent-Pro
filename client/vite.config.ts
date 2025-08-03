@@ -7,7 +7,7 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const base_url = env.VITE_BASE_URL;
+  const base_url = env.VITE_APP_BASE_URL;
 
   return {
     base: "/Seo-Agent-Pro/",

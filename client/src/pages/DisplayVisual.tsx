@@ -2,10 +2,9 @@ import { useRef, useState } from "react";
 import AnalysisForm from "../components/Form";
 import SEOVisualization from "../components/Visualization";
 import type { ApiResponse } from "../types/type"; // export that interface if you want reuse
-import axios from "axios";
 import RippleSkeleton from "../components/Skeleton";
 import SEOToolSteps from "@/components/SEOToolSteps";
-import { baseUrl } from "@/constant/constant";
+import api from "@/utils/api";
 
 const SEODashboard: React.FC = () => {
   const [analysisData, setAnalysisData] = useState<ApiResponse | null>(null);
@@ -18,7 +17,6 @@ const SEODashboard: React.FC = () => {
     competitorUrl: string,
     model: string
   ) => {
-    console.log("url model", userUrl, model);
     if (!userUrl || !competitorUrl) {
       setError("Please enter both URLs to compare");
       return;
@@ -29,8 +27,8 @@ const SEODashboard: React.FC = () => {
     controllerRef.current = new AbortController();
 
     try {
-      const res = await axios.post(
-        `${baseUrl}/api/v1/upload`,
+      const res = await api.post(
+        `/api/v1/upload`,
         {
           userUrl,
           competitorUrl,

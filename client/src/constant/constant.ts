@@ -1,3 +1,3 @@
 /// <reference types="vite/client" />
 
-export const baseUrl = import.meta.env.VITE_APP_base_url
+export const baseUrl = import.meta.env.VITE_APP_BASE_URL
