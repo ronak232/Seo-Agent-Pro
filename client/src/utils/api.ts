@@ -7,7 +7,7 @@ if (!baseUrl) {
 }
 
 const api = axios.create({
-  baseURL: import.meta.env.DEV ? "/api" : baseUrl, 
+  baseURL: import.meta.env.PROD ? baseUrl : "/api", 
 });
 
 export default api;

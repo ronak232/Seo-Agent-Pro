@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   const base_url = env.VITE_APP_BASE_URL;
 
   return {
-    base: "/Seo-Agent-Pro/",
+    // base: "/Seo-Agent-Pro/",
     server: {
       headers: {
         "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api": {
           target: base_url,
-          changeOrigin: true,
+          changeOrigin: true, 
         },
       },
       plugins: [react(), tailwindcss(), tsconfigPaths()],
