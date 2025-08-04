@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
+console.log("base url ", baseUrl)
 
 if (!baseUrl) {
   console.error("VITE_BASE_URL is not set in .env! Please add it.");

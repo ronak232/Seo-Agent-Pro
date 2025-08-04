@@ -322,7 +322,6 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
         "suggestKeywordsChart",
       ].forEach(destroy);
   }, [analysisData]);
-  console.log("api response ", analysisData);
 
   return (
     <div className="flex flex-col gap-3 mt-7 bg-transparent p-3 rounded-lg">

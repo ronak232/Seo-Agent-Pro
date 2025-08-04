@@ -28,7 +28,7 @@ const SEODashboard: React.FC = () => {
 
     try {
       const res = await api.post(
-        `/api/v1/upload`,
+        `${import.meta.env.VITE_APP_BASE_URL}/api/v1/upload`,
         {
           userUrl,
           competitorUrl,
