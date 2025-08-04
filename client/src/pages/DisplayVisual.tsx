@@ -4,7 +4,7 @@ import SEOVisualization from "../components/Visualization";
 import type { ApiResponse } from "../types/type"; // export that interface if you want reuse
 import RippleSkeleton from "../components/Skeleton";
 import SEOToolSteps from "@/components/SEOToolSteps";
-import api, { baseUrl } from "@/utils/api";
+import api from "@/utils/api";
 
 const SEODashboard: React.FC = () => {
   const [analysisData, setAnalysisData] = useState<ApiResponse | null>(null);
@@ -31,7 +31,7 @@ const SEODashboard: React.FC = () => {
         `/v1/upload`,
         {
           userUrl,
-          competitorUrl, 
+          competitorUrl,
           model,
         },
         {

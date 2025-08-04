@@ -37,7 +37,7 @@ jobs:
         run: npm run build
         working-directory: ./client
         env:
-          VITE_APP_BASEURL: ${{vars.VITE_APP_BASEURL}}
+          VITE_APP_BASE_URL: ${{vars.VITE_APP_BASE_URL}}
 
       # Project Deploy
       - name: Deploy to GitHub Pages
