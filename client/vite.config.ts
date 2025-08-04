@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
         "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
       },
       cors: {
-        origin: "https://seo-agent-pro-1.onrender.com",
+        origin: base_url,
       },
       port: 5173,
       proxy: {
