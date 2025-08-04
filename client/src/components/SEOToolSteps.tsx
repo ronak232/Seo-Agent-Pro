@@ -1,4 +1,4 @@
-import { Link, Search, BarChart3, Download, ArrowRight } from "lucide-react";
+import { Link, Search, BarChart3, ArrowRight } from "lucide-react";
 
 const SEOToolSteps = () => {
   const steps = [
@@ -23,13 +23,6 @@ const SEOToolSteps = () => {
       icon: <BarChart3 className="w-6 h-6" />,
       action: "View charts, missing keywords, and improvement suggestions",
     },
-    {
-      id: 4,
-      title: "Download Report",
-      description: "Export your SEO analysis report",
-      icon: <Download className="w-6 h-6" />,
-      action: "Get a detailed PDF report with actionable insights",
-    },
   ];
 
   return (
@@ -44,7 +37,7 @@ const SEOToolSteps = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {steps.map((step, index) => (
             <div key={step.id} className="relative">
               {/* Step Card */}
