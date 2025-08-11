@@ -5,7 +5,7 @@ function Home() {
   return (
     <>
       <div className="text-gray-800 overflow-x-hidden">
-        <div className="relative min-h-screen flex items-center justify-center p-4 bg-white">
+        <div className="relative min-h-screen flex items-center justify-center p-2 bg-white">
           <div className="relative w-full max-w-7xl flex items-center justify-center min-h-[880px] mt-15 mb-6">
             <div className="absolute top-10 left-0 md:top-20 md:left-10 lg:left-20 transform -rotate-6 transition-transform duration-300 hover:rotate-0 hover:scale-105 float-animation">
               <div className="bg-white p-3 rounded-xl shadow-xl w-72">
@@ -177,7 +177,7 @@ function Home() {
               </p>
 
               <div className="mt-4">
-                <Link to={"/seo-tool"} className="inline-block">
+                <Link to={"/compare"} className="inline-block">
                   <button className="px-4 py-2 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition cursor-pointer">
                     Start Your Free Analysis
                   </button>

@@ -26,6 +26,25 @@ export const modelsProvider = [
     model: "moonshotai/kimi-k2-instruct",
     thinking: "no",
     desc: "Moonshot AI's advance Model",
-    category: "Non-Thinking Model"
+    category: "Non-Thinking Model",
+  },
+];
+
+// web-browser models
+
+export const webModelsProvider = [
+  {
+    modelName: "Open-AI GPT-120b OSS",
+    model: "openai/gpt-oss-120b",
+    thinking: "default",
+    desc: "Open AI Advance Model",
+    category: "Thinking Model",
+  },
+  {
+    modelName: "Open-AI GPT-20b OSS",
+    model: "openai/gpt-oss-20b",
+    thinking: "no",
+    desc: "Open AI Model Small Model",
+    category: "Thinking Model",
   },
 ];

@@ -324,7 +324,7 @@ const SEOVisualization: React.FC<Props> = ({ analysisData }) => {
   }, [analysisData]);
 
   return (
-    <div className="flex flex-col gap-3 mt-7 bg-transparent p-3 rounded-lg">
+    <div className="flex flex-col gap-3 mt-7 bg-transparent p-2 rounded-lg">
       {/* Blog Titles */}
       <h2 className="text-2xl text-center pt-1.5 p-1.5 text-gray-900 font-semibold">
         Your Blog Performance

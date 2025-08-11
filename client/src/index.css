@@ -1,6 +1,13 @@
+@import url("https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif:ital,wdth,wght@0,87.5,100..900;1,87.5,100..900&family=Unna:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import "tailwindcss";
-
+@tailwind utilities;
 @plugin "daisyui";
+
+@theme {
+  --font-unna: "Unna", serif;
+  --font-noto: "Noto Serif", serif;
+  --font-domine: "Domine", serif;
+}
 
 html {
   overflow-y: scroll !important;
