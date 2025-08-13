@@ -13,7 +13,6 @@ import { z } from "zod";
 import { agentTools, getModelName } from "../services/services";
 import {
   ChatGoogleGenerativeAI,
-  GoogleGenerativeAIEmbeddings,
 } from "@langchain/google-genai";
 import { Request, Response } from "express";
 import { tool } from "@langchain/core/tools";
@@ -60,14 +59,11 @@ interface Plan {
 export async function agent(req: Request, res: Response): Promise<void> {
   const { userUrl, competitorUrl, model } = req.body;
 
-  console.log("user selected model ", model);
-
   let getCurrentModel = getModelName(model);
   // Ensure getCurrentModel is a valid language model, not an embedding model
   if (
     !getCurrentModel ||
-    typeof getCurrentModel.invoke !== "function" ||
-    typeof getCurrentModel.bind !== "function"
+    typeof getCurrentModel.invoke !== "function"
   ) {
     getCurrentModel = new ChatGoogleGenerativeAI({
       model: "gemini-2.0-flash",
@@ -316,7 +312,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
 
     const replanner = replannerPrompt.pipe(
       new ChatGoogleGenerativeAI({
-        model: "gemini-2.5-flash",
+        model: model,
       }).bindTools([planTool, responseTool, wordCounterTool])
     );
 

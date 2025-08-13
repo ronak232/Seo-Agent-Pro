@@ -26,7 +26,7 @@ const SEOToolSteps = () => {
   ];
 
   return (
-    <div className="bg-white-900 text-white py-20">
+    <div className="py-20">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-black text-4xl font-bold mb-4">

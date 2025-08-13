@@ -81,7 +81,7 @@ function SEOToolFeatures() {
     },
   ];
   return (
-    <div className="max-w-7xl mx-auto bg-transparent pe-2 pb-10 pt-10 ps-2 text-white flex flex-col gap-5">
+    <div className="max-w-7xl mx-auto pe-2 pb-10 pt-10 ps-2 flex flex-col gap-5">
       <div className="text-center">
         <div className="inline-flex items-center gap-2 bg-purple-500/20 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
           <Zap className="w-5 h-5 text-purple-400" />
@@ -92,7 +92,7 @@ function SEOToolFeatures() {
         <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
           Revolutionary SEO Analysis Platform
         </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl text-gray-500 max-w-3xl mx-auto leading-relaxed">
           Unlock the power of AI-driven SEO insights with real-time competitor
           analysis, keyword gap identification, and performance optimization
           tools
@@ -103,12 +103,12 @@ function SEOToolFeatures() {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-purple-500/50 transition-all duration-300"
+            className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-gray-500/50 transition-all duration-300"
           >
             <div className={`text-4xl font-bold mb-2 ${stat.color}`}>
               {stat.value}
             </div>
-            <div className="text-gray-400">{stat.label}</div>
+            <div className="">{stat.label}</div>
           </div>
         ))}
       </div>

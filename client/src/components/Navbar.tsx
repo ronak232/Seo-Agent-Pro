@@ -1,9 +1,28 @@
+import ThemeButton from "@/ui/themebutton";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <header className="bg-opacity-50 w-full fixed top-0 left-0 right-0 h-16 z-40 bg-white shadow-md border-b border-white/20">
+      <header
+        className={`${
+          isScrolled
+            ? "bg-white/80 border-b border-white/20 shadow-lg backdrop-blur-lg"
+            : "bg-white backdrop-blur-lg"
+        } bg-opacity-50 w-full fixed top-0 left-0 right-0 h-16 z-40 `}
+      >
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div className="hidden md:navbar shadow-2xs">
             <div className="flex items-center w-full">
@@ -19,10 +38,13 @@ function Navbar() {
                 SEO Online Tool
               </h1>
             </div>
-            <nav className="flex w-full">
-              <ul className="rounded-box z-1 mt-1 w-full p-1 text-black flex gap-2 items-center justify-end">
+            <nav className="flex items-center w-full relative gap-2">
+              <ul className="rounded-box z-1 w-full text-black flex gap-2 items-center justify-end">
                 <li className="">
-                  <Link className="text-[14px] font-domine" to={"/content-optimizer"}>
+                  <Link
+                    className="text-[14px] font-domine"
+                    to={"/content-optimizer"}
+                  >
                     Content Gap
                   </Link>
                 </li>
@@ -32,6 +54,7 @@ function Navbar() {
                   </Link>
                 </li>
               </ul>
+              <ThemeButton />
             </nav>
           </div>
           <div className="navbar shadow-sm sm:hidden">
@@ -48,11 +71,11 @@ function Navbar() {
                 SEO Online Tool
               </h1>
             </div>
-            <div className="dropdown dropdown-bottom dropdown-end text-base-300">
+            <div className="dropdown dropdown-bottom dropdown-end">
               <div
                 tabIndex={0}
                 role="button"
-                className="btn btn-ghost btn-circle"
+                className="btn btn-primary btn-circle"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -72,18 +95,21 @@ function Navbar() {
               </div>
               <ul
                 tabIndex={0}
-                className="menu menu-sm dropdown-content bg-white rounded-box z-1 mt-3 w-52 p-2 shadow"
+                className="menu menu-sm dropdown-content bg-black rounded-box z-1 mt-3 w-80 p-2 shadow gap-2 text-inherit"
               >
                 <li>
-                  <Link className="text-[16px]" to={"/content-optimizer"}>
+                  <Link className="text-[20px]" to={"/content-optimizer"}>
                     AI Content Check
                   </Link>
                 </li>
                 <li>
-                  <Link className="text-[16px]" to={"/compare"}>
+                  <Link className="text-[20px]" to={"/compare"}>
                     Compare Blog
                   </Link>
                 </li>
+                <span className="border-t-[1px] border-gray-700 pt-2">
+                  <ThemeButton />
+                </span>
               </ul>
             </div>
           </div>

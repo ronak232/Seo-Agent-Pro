@@ -37,14 +37,14 @@ const AnalysisForm: React.FC<Props> = ({
 
   return (
     <>
-      <section className="relative overflow-hidden py-20 px-6 bg-gradient-to-br from-white to-gray-100">
-        <div className="max-w-4xl mx-auto text-center space-y-8 backdrop-blur-md bg-white/50 p-10 rounded-3xl shadow-2xl border border-white/40 relative z-10">
+      <section className="relative overflow-hidden py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-8 backdrop-blur-md p-10 rounded-3xl shadow-2xl border border-white/40 relative z-10">
           <div className="flex justify-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium shadow-sm">
               <Sparkles className="w-4 h-4" /> AI-Powered Analysis
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-600 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-accent leading-tight">
             Analyze Any Content Instantly
           </h1>
         </div>

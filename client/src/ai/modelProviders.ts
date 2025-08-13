@@ -34,14 +34,14 @@ export const modelsProvider = [
 
 export const webModelsProvider = [
   {
-    modelName: "Open-AI GPT-120b OSS",
+    modelName: "OpenAI GPT-120b OSS",
     model: "openai/gpt-oss-120b",
     thinking: "default",
     desc: "Open AI Advance Model",
     category: "Thinking Model",
   },
   {
-    modelName: "Open-AI GPT-20b OSS",
+    modelName: "OpenAI GPT-20b OSS",
     model: "openai/gpt-oss-20b",
     thinking: "no",
     desc: "Open AI Model Small Model",

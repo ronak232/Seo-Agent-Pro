@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Noto+Serif:ital,wdth,wght@0,87.5,100..900;1,87.5,100..900&family=Unna:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import "tailwindcss";
-@tailwind utilities;
 @plugin "daisyui";
 
 @theme {
@@ -9,11 +8,34 @@
   --font-domine: "Domine", serif;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   overflow-y: scroll !important;
   padding-right: 0px !important;
+  min-height: 100%;
+}
+
+body {
+  transition: all 0.9s ease-in-out;
+}
+
+[data-theme="light"] {
+  --background-color: white;
+  --text-color: black;
+}
+
+[data-theme="dark"] {
+  --background-color: linear-gradient(to bottom, #151d2d, #040404);
+  --text-color: white;
 }
 body {
-  background: transparent;
-  height: 100vh;
+  background: var(--background-color);
+  color: var(--text-color);
+  height: 100%;
+  background-attachment: fixed;
 }

@@ -12,6 +12,10 @@ export const agentTools = new TavilyExtract({
   format: "markdown",
 });
 
+const groq = new Groq({
+  apiKey: process.env.GROQ_API,
+});
+
 export function getModelName(model: string) {
   let agentModel;
   if (model === "gemini-2.5-flash") {
@@ -47,20 +51,48 @@ export function getModelName(model: string) {
   return agentModel;
 }
 
-export async function getBlogAnalysisModel(
-  model: string,
+// tool to handle single blog analysis
+export async function getSingleBlogAnalysis(
+  webSearchmodel: string,
   userQuery: string
 ) {
-  const groq = new Groq();
-
+  console.log("getting ", webSearchmodel);
   const chatCompletion = await groq.chat.completions.create({
+    model: webSearchmodel,
     messages: [
+      {
+        role: "assistant",
+        content: `You are an SEO assistant. Intelligently extract url from 
+                  {userQuery} and analyze it do research the following blog content and give:
+                  1. Overall SEO score (0-100)
+                  2. Keyword usage score (0-100)
+                  3. Content quality score (0-100)
+                  4. List 5 missing but relevant keywords for better Google ranking
+                  5. Feedback for content missing gap improvement
+                  6. Recommendation for quality and overall content like title, blog or article body content, heading usages
+                  7. Understand target audience and identify 2-3 core topics blog will focus on
+
+                  hack you can follow 
+                  blog post title formulas you can model:
+
+                  “X Easy Ways to [accomplish something]” or “X [Common problems] with [niche topic] and How to Fix Them” or “The Beginner's Guide to [niche topic]”
+
+                  Return JSON with:
+                  {
+                    "seo_score": number,
+                    "keyword_score": number,
+                    "content_quality": number,
+                    "missing_keywords": string[],
+                    feedBack:string,
+                    recommendation:string[]
+                  }
+                `,
+      },
       {
         role: "user",
         content: userQuery,
       },
     ],
-    model: model,
     temperature: 1,
     top_p: 1,
     stop: null,
@@ -83,12 +115,12 @@ export async function getBlogAnalysisModel(
         },
       },
     ],
-    stream: true,
+    stream: false,
     reasoning_format: "parsed",
-
   });
 
-  for await (const chunk of chatCompletion) {
-    process.stdout.write(chunk.choices[0]?.delta?.content || "");
-  }
+  const response = chatCompletion.choices[0]?.message?.content;
+  console.log("response reasiong ", response);
+
+  return response;
 }
