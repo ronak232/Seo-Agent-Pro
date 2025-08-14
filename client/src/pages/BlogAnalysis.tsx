@@ -10,15 +10,9 @@ import { ChevronsUpDown, Cpu } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/helper/selectModels";
 import { ArrowUp } from "lucide-react";
 import api from "@/utils/api";
+import { AnalysisResult, ModelProps } from "@/types/type";
 
-interface AnalysisResult {
-  overall_score: number;
-  keyword_score: number;
-  content_quality: number;
-  missingKeywords: string[];
-}
-
-interface ScoreCardProps {
+export interface ScoreCardProps {
   label: string;
   value: number;
   color: string;
@@ -30,7 +24,7 @@ const BlogAnalysis: React.FC = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState("");
   const [webSearchModel, setWebSearchModel] = useState<string>(
-    webModelsProvider[0].model
+    webModelsProvider[0]?.model || ""
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -47,7 +41,7 @@ const BlogAnalysis: React.FC = () => {
       setResult(null);
 
       const res = await api.post(`http://localhost:5000/api/v1/analyze`, {
-        webSearchModel: getWebSearchSelectedModel(webSearchModel),
+        webSearchModel: webSearchModel,
         query,
       });
       const data = await res.data.responseData;
@@ -56,14 +50,15 @@ const BlogAnalysis: React.FC = () => {
 
       // Mock data for now
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
+      console.error("Something happens wrong", err);
+      setError(err);
       setLoading(false);
     }
   };
 
   const handleChange = (value: string) => {
-    const backendModel = getWebSearchSelectedModel(value?.model || "");
+    const backendModel = getWebSearchSelectedModel(value) || "";
+    console.log("backend model ", backendModel);
     setWebSearchModel(backendModel);
   };
 

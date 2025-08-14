@@ -17,3 +17,18 @@ export interface ApiResponse {
     improved_meta_title: string;
   };
 }
+
+export interface AnalysisResult {
+  overall_score: number;
+  keyword_score: number;
+  content_quality: number;
+  missingKeywords: string[];
+}
+
+export interface ModelProps {
+  category?: string;
+  desc?: string;
+  model?: string;
+  modelName?: string;
+  thinking?: boolean;
+}

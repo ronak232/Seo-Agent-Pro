@@ -3,6 +3,7 @@ export const getSelectedModel = (model: string) => {
 };
 
 // browser-search helper function
-export const getWebSearchSelectedModel = (model: string) => {
-  return model && model.trim() ? model : "openai/gpt-oss-120b";
+export const getWebSearchSelectedModel = (model?: string) => {
+  console.log("model ", model)
+  return model?.model?.trim() || "openai/gpt-oss-120b";
 };
