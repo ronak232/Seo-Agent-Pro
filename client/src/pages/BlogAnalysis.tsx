@@ -10,7 +10,7 @@ import { ChevronsUpDown, Cpu } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/helper/selectModels";
 import { ArrowUp } from "lucide-react";
 import api from "@/utils/api";
-import { AnalysisResult, ModelProps } from "@/types/type";
+import { AnalysisResult } from "@/types/type";
 
 export interface ScoreCardProps {
   label: string;
@@ -50,15 +50,17 @@ const BlogAnalysis: React.FC = () => {
 
       // Mock data for now
     } catch (err) {
-      console.error("Something happens wrong", err);
-      setError(err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(String(err)); // fallback
+      }
       setLoading(false);
     }
   };
 
   const handleChange = (value: string) => {
     const backendModel = getWebSearchSelectedModel(value) || "";
-    console.log("backend model ", backendModel);
     setWebSearchModel(backendModel);
   };
 
@@ -117,7 +119,7 @@ const BlogAnalysis: React.FC = () => {
                   {webModelsProvider.map((item) => (
                     <ListboxOption
                       key={item.modelName}
-                      value={item}
+                      value={item.model}
                       className="hover:bg-gray-500 cursor-pointer border-b-[1px] border-gray-400 p-1"
                     >
                       <div>
