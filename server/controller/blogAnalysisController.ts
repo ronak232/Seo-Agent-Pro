@@ -14,7 +14,7 @@ interface GPTResponse {
 
 export async function blogAnalysis(req: Request, res: Response): Promise<void> {
   const { webSearchModel, query } = req.body;
-  console.log(req.body)
+  console.log(req.body);
 
   if (!query) return;
 
@@ -28,9 +28,10 @@ export async function blogAnalysis(req: Request, res: Response): Promise<void> {
       responseData: getResponse,
     });
   } catch (error) {
-    console.error("error ", error.message);
-    res.status(500).json({
-      mesaage: "Something bad happened",
-    });
+    if (error instanceof Error) {
+      res.status(500).json({
+        mesaage: "Something bad happened",
+      });
+    }
   }
 }
