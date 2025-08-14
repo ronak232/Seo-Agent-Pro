@@ -13,7 +13,7 @@ export const agentTools = new TavilyExtract({
 });
 
 const groq = new Groq({
-  apiKey: process.env.GROQ_API,
+  apiKey: process.env.GROQ_AP || "",
 });
 
 export function getModelName(model: string) {
