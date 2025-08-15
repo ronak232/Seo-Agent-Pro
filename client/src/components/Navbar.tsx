@@ -19,15 +19,14 @@ function Navbar() {
       <header
         className={`${
           isScrolled
-            ? "bg-white/80 border-b border-white/20 shadow-lg backdrop-blur-lg"
-            : "bg-white backdrop-blur-lg"
+            ? "bg-black/80 border-b border-white/20 shadow-lg"
+            : "bg-black/90"
         } bg-opacity-50 w-full fixed top-0 left-0 right-0 h-16 z-40 `}
       >
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div className="hidden md:navbar shadow-2xs">
             <div className="flex items-center w-full">
               <Link className="text-[14px]" to={"/home"}>
-                {/* <TrendingUp className="w-8 h-8 text-blue-400 mr-3" /> */}
                 <img
                   className="w-20 h-10"
                   src="https://res.cloudinary.com/dwc1sjsvj/image/upload/v1754214545/f1pjzukibxzlncqtazw5.png"
@@ -39,22 +38,22 @@ function Navbar() {
               </h1>
             </div>
             <nav className="flex items-center w-full relative gap-2">
-              <ul className="rounded-box z-1 w-full text-black flex gap-2 items-center justify-end">
-                <li className="">
+              <ul className="rounded-box z-1 w-full flex gap-2 items-center text-white justify-end">
+                <li className="font-semibold">
                   <Link
-                    className="text-[14px] font-domine"
+                    className="text-[14px] font-lato"
                     to={"/content-optimizer"}
                   >
                     Content Gap
                   </Link>
                 </li>
-                <li>
-                  <Link className="text-[14px] font-domine" to={"/compare"}>
+                <li className="font-semibold">
+                  <Link className="text-[14px] font-lato" to={"/compare"}>
                     Compare Blog
                   </Link>
                 </li>
+                <ThemeButton />
               </ul>
-              <ThemeButton />
             </nav>
           </div>
           <div className="navbar shadow-sm sm:hidden">

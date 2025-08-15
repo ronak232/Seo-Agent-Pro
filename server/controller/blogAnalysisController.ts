@@ -13,22 +13,24 @@ interface GPTResponse {
 }
 
 export async function blogAnalysis(req: Request, res: Response): Promise<void> {
-  const { webSearchModel, query } = req.body;
+  const { webSearchModel, prompt } = req.body;
   console.log(req.body);
 
-  if (!query) return;
+  if (!prompt) return;
 
   // analysis
   try {
-    const getResponse = await getSingleBlogAnalysis(webSearchModel, query);
-
-    console.log("response ", getResponse);
+    const getResponse = await getSingleBlogAnalysis(
+      webSearchModel,
+      prompt
+    );
 
     res.status(200).json({
       responseData: getResponse,
     });
   } catch (error) {
     if (error instanceof Error) {
+      console.error("error response ", error.message);
       res.status(500).json({
         mesaage: "Something bad happened",
       });

@@ -11,9 +11,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { z } from "zod";
 import { agentTools, getModelName } from "../services/services";
-import {
-  ChatGoogleGenerativeAI,
-} from "@langchain/google-genai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Request, Response } from "express";
 import { tool } from "@langchain/core/tools";
 import sanitizeHtml from "sanitize-html";
@@ -61,10 +59,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
 
   let getCurrentModel = getModelName(model);
   // Ensure getCurrentModel is a valid language model, not an embedding model
-  if (
-    !getCurrentModel ||
-    typeof getCurrentModel.invoke !== "function"
-  ) {
+  if (!getCurrentModel || typeof getCurrentModel.invoke !== "function") {
     getCurrentModel = new ChatGoogleGenerativeAI({
       model: "gemini-2.0-flash",
     });

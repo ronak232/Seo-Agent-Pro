@@ -19,7 +19,7 @@ export interface ScoreCardProps {
 }
 
 const BlogAnalysis: React.FC = () => {
-  const [query, setQuery] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState("");
@@ -31,7 +31,7 @@ const BlogAnalysis: React.FC = () => {
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!query.trim()) {
+    if (!prompt.trim()) {
       setError("Please enter a valid blog URL.");
       return;
     }
@@ -42,7 +42,7 @@ const BlogAnalysis: React.FC = () => {
 
       const res = await api.post(`http://localhost:5000/api/v1/analyze`, {
         webSearchModel: webSearchModel,
-        query,
+        prompt,
       });
       const data = await res.data.responseData;
       setLoading(false);
@@ -70,7 +70,7 @@ const BlogAnalysis: React.FC = () => {
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
-  }, [query]);
+  }, [prompt]);
 
   return (
     <div className="min-h-screen relative overflow-hidden py-30 px-3">
@@ -90,11 +90,10 @@ const BlogAnalysis: React.FC = () => {
         <div className="relative max-w-3xl mx-auto border-[2px] border-green-400 ring-green-400 focus:ring-green-500 rounded-lg p-2">
           <textarea
             ref={textareaRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            // onKeyPress={handleKeyPress}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
             placeholder="Ask a question..."
-            className="w-full min-h-[10px] max-h-[200px] resize-none bg-transparent focus:outline-0 text-white placeholder-gray-400 text-base leading-relaxed p-2 rounded-xl"
+            className="w-full min-h-[10px] max-h-[200px] resize-none bg-transparent focus:outline-0 placeholder-gray-400 font-medium text-base leading-relaxed p-2 rounded-xl"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",

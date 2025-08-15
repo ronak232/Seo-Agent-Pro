@@ -27,9 +27,10 @@
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
+    "groq-sdk": "^0.30.0",
     "mongoose": "^8.15.1",
     "sanitize-html": "^2.17.0",
-    "zod": "^3.25.67"
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.6",

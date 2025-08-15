@@ -44,7 +44,7 @@ export const webModelsProvider = [
     modelName: "OpenAI GPT-20b OSS",
     model: "openai/gpt-oss-20b",
     thinking: "no",
-    desc: "Open AI Model Small Model",
+    desc: "Open AI Small Model",
     category: "Thinking Model",
   },
 ];
