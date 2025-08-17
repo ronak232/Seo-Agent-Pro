@@ -28,6 +28,8 @@ const BlogAnalysis: React.FC = () => {
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // const decoder_chunk = new TextDecoder();
+
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

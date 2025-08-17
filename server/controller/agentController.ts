@@ -10,7 +10,7 @@ import { RunnableConfig } from "@langchain/core/runnables";
 import { HumanMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { z } from "zod";
-import { agentTools, getModelName } from "../services/services";
+import { agentTool, getModelName } from "../services/services";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { Request, Response } from "express";
 import { tool } from "@langchain/core/tools";
@@ -71,10 +71,10 @@ export async function agent(req: Request, res: Response): Promise<void> {
     }
 
     const [url1content, url2content]: [any, any] = await Promise.all([
-      agentTools.invoke({
+      agentTool.invoke({
         urls: [userUrl],
       }),
-      agentTools.invoke({
+      agentTool.invoke({
         urls: [competitorUrl],
       }),
     ]);
@@ -119,7 +119,7 @@ export async function agent(req: Request, res: Response): Promise<void> {
 
     const agent = createReactAgent({
       llm: getCurrentModel,
-      tools: [agentTools],
+      tools: [agentTool],
       checkpointSaver: agentCheckpointer,
     });
 

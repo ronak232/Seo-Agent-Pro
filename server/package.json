@@ -20,7 +20,7 @@
     "@langchain/groq": "^0.2.3",
     "@langchain/langgraph": "^0.3.6",
     "@langchain/openai": "^0.5.18",
-    "@langchain/tavily": "^0.1.4",
+    "@langchain/tavily": "^0.1.5",
     "@tavily/core": "^0.5.9",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
@@ -30,6 +30,7 @@
     "groq-sdk": "^0.30.0",
     "mongoose": "^8.15.1",
     "sanitize-html": "^2.17.0",
+    "ws": "^8.18.3",
     "zod": "^4.0.17"
   },
   "devDependencies": {

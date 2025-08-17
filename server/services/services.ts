@@ -11,7 +11,7 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API || "",
 });
 
-export const agentTools = new TavilyExtract({
+export const agentTool = new TavilyExtract({
   extractDepth: "advanced",
   includeImages: false,
   format: "markdown",
@@ -57,17 +57,17 @@ export async function getSingleBlogAnalysis(
   webSearchmodel: string,
   userQuery: string
 ) {
-  const responsSchema = z
+  const responseSchema = z
     .object({
-      overall_seo_score: z.number(),
-      keyword_usage_score: z.number(),
-      content_quality_score: z.number(),
-      feedback: z.array(z.string()),
-      recommendation: z.array(z.string()),
+      overall_seo_score: z.number().default(0),
+      keyword_usage_score: z.number().default(0),
+      content_quality_score: z.number().default(0),
+      feedback: z.array(z.string()).default([]),
+      recommendation: z.array(z.string()).default([]),
+      missing_keywords: z.array(z.string()).default([]),
+      seo_heading_feedback: z.array(z.string()).default([]),
     })
-    .describe("");
-
-  // type ModelSchema = z.infer<typeof responsSchema>;
+    .describe("Ai json response");
 
   const chatCompletion = await groq.chat.completions.create({
     model: webSearchmodel,
@@ -86,21 +86,27 @@ export async function getSingleBlogAnalysis(
                   4. List 5 missing but relevant keywords for better Google ranking
                   5. Feedback for content missing gap improvement
                   6. Recommendation for quality and overall content like title, blog or article body content, heading usages
-                  7. Understand target audience and identify 2-3 core topics blog will focus on.
-                  8. heading structure improvement and seo heading feedback
+                  7. Understand the target audience and identify 2-3 core topics the blog will focus on
+                  8. meta title of blog feedback
+                  9. heading structure improvement and seo heading feedback
+                  10. If 
 
                   Hack follow for blog post title formulas you can model:
 
                   “X Easy Ways to [accomplish something]” or “X [Common problems] with [niche topic] and How to Fix Them” or “The Beginner's Guide to [niche topic]”
-                  
-                  In response never add irrelevant infomations like page content, just analyze it and also add in response below points in json format and do not hallacuation for content
+
+                  Do not include raw search results,website page content, or extra info., just analyze it and do not hallacuation for content
+                  Please respond with only valid JSON in the following format
+                  \`\`\`json
                   {
                     "overall_seo_score": number,
                     "keyword_usage_score": number,
                     "content_quality_score": number,
                     "feedback":string[],
-                    "recommendation":string[]
-                  }
+                    "recommendation":string[],
+                    "missing_keywords":string[],
+                    "seo_heading_feedback": string[],
+                  }                  
                 `,
       },
     ],
@@ -108,7 +114,9 @@ export async function getSingleBlogAnalysis(
     top_p: 1,
     stop: null,
     tool_choice: "auto",
-    reasoning_effort: "medium",
+    search_settings: {},
+
+    reasoning_effort: "low",
     tools: [
       {
         type: "browser_search",
@@ -116,17 +124,20 @@ export async function getSingleBlogAnalysis(
     ],
 
     reasoning_format: "parsed",
-    // response_format: {
-    //   type: "json_schema",
-    //   json_schema: {
-    //     name: "response",
-    //     schema: z.toJSONSchema(responsSchema),
-    //   },
-    // },
   });
+  let response;
+  let rawResponse = chatCompletion.choices[0].message.content ?? "";
+  try {
+    let getJson = extractJsonFromString(rawResponse);
+    response = responseSchema.parse(getJson);
+    return response;
+  } catch (error) {
+    throw new Error("Response did not match ");
+  }
+}
 
-  const response = chatCompletion.choices[0]?.message.content;
-  console.log("response ", response);
-
-  return response;
+function extractJsonFromString(data: string) {
+  const regex = /[{\[]{1}([,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]|".*?")+[}\]]{1}/gis;
+  const matches = data?.match(regex) ?? [];
+  return Object.assign({}, ...matches.map((m) => JSON.parse(m)));
 }
