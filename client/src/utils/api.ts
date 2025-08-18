@@ -7,7 +7,7 @@ if (!baseUrl) {
 }
 
 const api = axios.create({
-  baseURL: baseUrl
+  baseURL: baseUrl,
 });
 
 export default api;

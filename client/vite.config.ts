@@ -19,12 +19,12 @@ export default defineConfig(({ mode }) => {
         origin: base_url,
       },
       port: 5173,
-      // proxy: {
-      //   "/api": {
-      //     target: base_url,
-      //     changeOrigin: true, 
-      //   },
-      // },
+      proxy: {
+        "/api": {
+          target: base_url,
+          changeOrigin: true, 
+        },
+      },
       plugins: [react(), tailwindcss(), tsconfigPaths()],
     },
     resolve: {

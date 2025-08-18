@@ -65,7 +65,10 @@ export async function getSingleBlogAnalysis(
       feedback: z.array(z.string()).default([]),
       recommendation: z.array(z.string()).default([]),
       missing_keywords: z.array(z.string()).default([]),
-      seo_heading_feedback: z.array(z.string()).default([]),
+      seo_headings_feedback: z.array(z.string()).default([]),
+      content_feedback: z.array(z.string()).default([]),
+      industry_tip: z.array(z.string()).default([]),
+      target_audience: z.string().default("")
     })
     .describe("Ai json response");
 
@@ -78,24 +81,24 @@ export async function getSingleBlogAnalysis(
       },
       {
         role: "system",
-        content: `You are an SEO assistant. Intelligently extract url from 
-                  {userQuery} and analyze it do research the following blog content and give:
+        content: `You are a professional blog editor. who intelligently extract url from 
+                  {userQuery} and analyze url content, do research the following blog content and give:
                   1. Overall SEO score (0-100)
                   2. Keyword usage score (0-100)
                   3. Content quality score (0-100)
                   4. List 5 missing but relevant keywords for better Google ranking
-                  5. Feedback for content missing gap improvement
+                  5. Feedback for content improvement
                   6. Recommendation for quality and overall content like title, blog or article body content, heading usages
-                  7. Understand the target audience and identify 2-3 core topics the blog will focus on
-                  8. meta title of blog feedback
-                  9. heading structure improvement and seo heading feedback
-                  10. If 
-
+                  7. Understand the target audience and identify 2-3 core topics the blog will should focus on...
+                  8. feedback for strong, weak for meta description and with score (0-100)
+                  9. Prepare feedback for headings structure in {url}
+                  10. Also provide industry level tips against {url} content
+                  11. List at least 6 most strong content feedback of currrent blog {url}
                   Hack follow for blog post title formulas you can model:
 
                   “X Easy Ways to [accomplish something]” or “X [Common problems] with [niche topic] and How to Fix Them” or “The Beginner's Guide to [niche topic]”
 
-                  Do not include raw search results,website page content, or extra info., just analyze it and do not hallacuation for content
+                  Do not include raw search results,website page content, or extra info, just analyze it and do not hallacuation for content and give authentic informations.
                   Please respond with only valid JSON in the following format
                   \`\`\`json
                   {
@@ -105,7 +108,10 @@ export async function getSingleBlogAnalysis(
                     "feedback":string[],
                     "recommendation":string[],
                     "missing_keywords":string[],
-                    "seo_heading_feedback": string[],
+                    "seo_headings_feedback": string[],
+                    "content_feedbacks":string[],
+                    "industry_score": string[]
+                    "target_audience": string
                   }                  
                 `,
       },
@@ -114,16 +120,14 @@ export async function getSingleBlogAnalysis(
     top_p: 1,
     stop: null,
     tool_choice: "auto",
-    search_settings: {},
-
+    include_reasoning: true,
+    seed: 1,
     reasoning_effort: "low",
     tools: [
       {
         type: "browser_search",
       },
     ],
-
-    reasoning_format: "parsed",
   });
   let response;
   let rawResponse = chatCompletion.choices[0].message.content ?? "";

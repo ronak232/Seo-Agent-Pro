@@ -5,7 +5,7 @@ import { Cpu } from "lucide-react";
 import { ChevronsUpDown } from "lucide-react";
 import { ArrowBigUp } from "lucide-react";
 import { modelsProvider } from "@/ai/modelProviders";
-import { getSelectedModel } from "@/helper/selectModels";
+import { getSelectedModel } from "@/utils/model";
 import {
   Listbox,
   ListboxOption,

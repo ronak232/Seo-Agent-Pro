@@ -6,17 +6,65 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
-import { ChevronsUpDown, Cpu } from "lucide-react";
-import { getWebSearchSelectedModel } from "@/helper/selectModels";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronsUpDown,
+  Cpu,
+  FileText,
+  Lightbulb,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+import { getWebSearchSelectedModel } from "@/utils/model";
 import { ArrowUp } from "lucide-react";
 import api from "@/utils/api";
 import { AnalysisResult } from "@/types/type";
+import {
+  Chart as ChartJS,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  DoughnutController,
+  ArcElement,
+  RadarController,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BubbleController,
+  LineController,
+  PieController,
+} from "chart.js";
+import { getScoreStatus } from "@/utils/calculateStatus";
 
 export interface ScoreCardProps {
   label: string;
   value: number;
   color: string;
 }
+
+ChartJS.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  DoughnutController,
+  ArcElement,
+  RadarController,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  LineController,
+  Legend,
+  PieController,
+  BubbleController
+);
 
 const BlogAnalysis: React.FC = () => {
   const [prompt, setPrompt] = useState("");
@@ -27,8 +75,6 @@ const BlogAnalysis: React.FC = () => {
     webModelsProvider[0]?.model || ""
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // const decoder_chunk = new TextDecoder();
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +104,8 @@ const BlogAnalysis: React.FC = () => {
         setError(String(err)); // fallback
       }
       setLoading(false);
+    } finally {
+      setPrompt("");
     }
   };
 
@@ -148,7 +196,6 @@ const BlogAnalysis: React.FC = () => {
             </button>
           </div>
         </div>
-
         {error && <p className="text-red-400 mb-6">{error}</p>}
 
         {loading && (
@@ -158,46 +205,209 @@ const BlogAnalysis: React.FC = () => {
         )}
 
         {result && (
-          <div className="bg-gray-800 p-6 mt-4 rounded-2xl shadow-lg space-y-6 animate-fadeIn">
-            <h2 className="text-xl font-semibold mb-4">Analysis Results</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <ScoreCard
-                label="SEO Score"
-                value={result.overall_score}
-                color="text-green-400"
-              />
-              <ScoreCard
-                label="Keyword Score"
-                value={result.keyword_score}
-                color="text-yellow-400"
-              />
-              <ScoreCard
-                label="Content Quality"
-                value={result.content_quality}
-                color="text-blue-400"
-              />
+          <>
+            <h1 className="text-2xl font-semibold mb-4 mt-4">
+              Analysis Results
+            </h1>
+
+            <div className="p-6 mt-4 rounded-2xl shadow-lg space-y-6 animate-fadeIn">
+              <div className="text-left text-lg border-[1px] border-gray-300 rounded-lg p-3">
+                Target Audience
+                <p className="text-indigo-400">
+                  {result.target_audience}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <ScoreCardDashboard
+                  overall_seo_score={result.overall_seo_score}
+                  keyword_usage_score={result.keyword_usage_score}
+                  content_quality_score={result.content_quality_score}
+                />
+                <div className="flex flex-col gap-4 item-center border-[1px] border-gray-300 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <p className="text-sm">Overall Score</p>
+                      <p className="text-xl">{result?.overall_seo_score}</p>
+                      <p
+                        className={`text-[16px] font-bold ${
+                          getScoreStatus(result.overall_seo_score || 0).color
+                        }`}
+                      >
+                        {getScoreStatus(result.overall_seo_score || 0).status}
+                      </p>
+                    </div>
+                    <div className="">
+                      <TrendingUp color="#3b82f6" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <p className="text-sm">Keyword Usage Score</p>
+                      <p className="text-xl">{result?.keyword_usage_score}</p>
+                      <p
+                        className={`text-[16px] font-bold ${
+                          getScoreStatus(result.keyword_usage_score || 0).color
+                        }`}
+                      >
+                        {getScoreStatus(result.keyword_usage_score || 0).status}
+                      </p>
+                    </div>
+                    <div className="">
+                      <Target color="#10b981" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <p className="text-sm">Content Quality Score</p>
+                      <p className="text-xl">{result?.content_quality_score}</p>
+                      <p
+                        className={`text-[16px] font-bold ${
+                          getScoreStatus(result.content_quality_score || 0)
+                            .color
+                        }`}
+                      >
+                        {
+                          getScoreStatus(result.content_quality_score || 0)
+                            .status
+                        }
+                      </p>
+                    </div>
+                    <div>
+                      <FileText color="#f59e0b" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 item-center border-[1px] border-gray-300 rounded-lg">
+                <h2 className="text-lg">Headings Feedbacks</h2>
+                {result.seo_headings_feedback?.map((item) => {
+                  return <p className="text-[16px]">{item}</p>;
+                })}
+              </div>
+              <div className="p-4 flex gap-2 item-start flex-col border-[1px] border-gray-300 rounded-lg">
+                <h2 className="text-lg">Missing Keyword</h2>
+                {result?.missing_keywords?.map((item, index) => {
+                  return (
+                    <div key={index} className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-[16px]">{item}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center space-x-2 mb-6">
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <h3 className="text-lg font-semibold">
+                    Feedback For Improvements
+                  </h3>
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {result?.feedback?.length} items
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {result?.feedback?.map((item, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-[16px] text-left">{item}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mb-4 mt-4 border-t-[1px] border-t-gray-300"></div>
+                <div className="flex items-center gap-2 space-x-2 mb-6">
+                  <Lightbulb className="w-5 h-5 text-amber-500" />
+                  <h3 className="text-lg font-semibold">Recommendations</h3>
+                  <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {result?.recommendation?.length} items
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {result?.recommendation?.map((item, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-[16px] text-left">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-4">
+                <h2 className="text-xl">Tip for good seo ranking</h2>
+                <div className="flex flex-col items-start gap-2">
+                  {result.industry_score?.map((item) => {
+                    return <p>{item}</p>;
+                  })}
+                </div>
+              </div>
             </div>
-            {/* 
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Missing Keywords</h3>
-              <ul className="list-disc list-inside text-gray-300">
-                {result.map((item, i) => (
-                  <li key={i}>{item.overall_score}</li>
-                ))}
-              </ul>
-            </div> */}
-          </div>
+          </>
         )}
       </div>
     </div>
   );
 };
 
-const ScoreCard: React.FC<ScoreCardProps> = ({ label, value, color }) => {
+const ScoreCardDashboard = ({
+  overall_seo_score,
+  keyword_usage_score,
+  content_quality_score,
+}: AnalysisResult) => {
+  useEffect(() => {
+    const destroy = (id: string) => {
+      ChartJS.getChart(id)?.destroy();
+    };
+
+    const dashboardData = () => {
+      destroy("scores");
+      const scores = document.getElementById("scores") as HTMLCanvasElement;
+
+      if (scores) {
+        new ChartJS(scores, {
+          type: "pie",
+          data: {
+            labels: ["Overall Score", "Keywords Score", "Content Score"],
+            datasets: [
+              {
+                label: "Score",
+                data: [
+                  overall_seo_score,
+                  keyword_usage_score,
+                  content_quality_score,
+                ],
+                backgroundColor: [
+                  "rgb(255, 99, 132)",
+                  "rgb(54, 162, 235)",
+                  "rgb(255, 205, 86)",
+                ],
+                borderColor: "#3b82f6",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  font: {
+                    size: 16,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+    };
+    dashboardData();
+    return () => {
+      ["scores"].forEach(destroy);
+    };
+  }, [overall_seo_score, keyword_usage_score, content_quality_score]);
+
   return (
-    <div className="bg-gray-900 rounded-xl p-4 text-center">
-      <p className="text-sm text-gray-400">{label}</p>
-      <p className={`text-3xl font-bold ${color}`}>{value}%</p>
+    <div className="p-2 border-[1px] border-gray-300 rounded-lg">
+      <canvas id="scores" aria-label="score" role="img" />
     </div>
   );
 };

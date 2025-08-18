@@ -19,10 +19,15 @@ export interface ApiResponse {
 }
 
 export interface AnalysisResult {
-  overall_score: number;
-  keyword_score: number;
-  content_quality: number;
-  missingKeywords: string[];
+  overall_seo_score?: number;
+  keyword_usage_score?: number;
+  content_quality_score?: number;
+  feedback?: string[];
+  recommendation?: string[];
+  industry_score?: string[] | [];
+  seo_headings_feedback?: string[] | [];
+  missing_keywords?: string[] | [];
+  target_audience?:string 
 }
 
 export interface ModelProps {
