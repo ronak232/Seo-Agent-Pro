@@ -6,7 +6,7 @@ function SEOFooter() {
       <div className="flex flex-col items-center gap-3">
         <p className="text-4xl font-bold text-blue-700">SEO Tool</p>
         <p className="text-gray-600">
-          Design with the least amount of effort starting now.
+          Intelligent Content Analysis That Reveals Your Blog's Hidden SEO Potential
         </p>
         <div className="flex gap-4 mt-4">
           <Link className="cursor-pointer" to={"/seo-tool"}>

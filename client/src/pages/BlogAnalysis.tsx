@@ -94,7 +94,7 @@ const BlogAnalysis: React.FC = () => {
       setResult(null);
 
       const res = await api.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/api/v1/analyze`,
+        `http://localhost:5000/api/v1/analyze`,
         {
           webSearchModel: webSearchModel,
           prompt,
@@ -224,7 +224,7 @@ const BlogAnalysis: React.FC = () => {
                   <Users color="#fba441" />
                   <h2 className="text-xl">Target Audience</h2>
                 </div>
-                <p className="text-sm">{result.target_audience}</p>
+                <p className="text-sm text-left">{result.target_audience}</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ScoreCardDashboard
@@ -289,7 +289,7 @@ const BlogAnalysis: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 items-end border-[1px] border-gray-300 rounded-lg p-4">
+              <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
                 <div className="flex gap-2">
                   <LibraryBig color="#4147fb" />
                   <h2 className="text-lg text-left font-semibold">
@@ -368,10 +368,10 @@ const BlogAnalysis: React.FC = () => {
                     Tip for good seo ranking
                   </h2>
                 </div>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col gap-2">
                   {result.industry_tip?.map((item, index) => {
                     return (
-                      <div key={index} className="flex items-start space-x-3">
+                      <div key={index} className="flex gap-2">
                         <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                         <p className="text-[16px] text-left">{item}</p>
                       </div>
