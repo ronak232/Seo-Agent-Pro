@@ -218,8 +218,10 @@ const BlogAnalysis: React.FC = () => {
 
             <div className="p-6 mt-4 rounded-2xl shadow-lg space-y-6 animate-fadeIn">
               <div className="flex gap-2 text-lg border-[1px] border-gray-300 rounded-lg p-3">
-                <Users color="#fba441" />
-                Target Audience
+                <div className="flex gap-3">
+                  <Users color="#fba441" />
+                  <h2 className="text-2xl">Target Audience</h2>
+                </div>
                 <p className="text-sm">{result.target_audience}</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -286,7 +288,7 @@ const BlogAnalysis: React.FC = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-3">
                   <LibraryBig color="#4147fb" />
                   <h2 className="text-lg text-left font-semibold">
                     Headings Feedbacks
@@ -301,8 +303,8 @@ const BlogAnalysis: React.FC = () => {
                   );
                 })}
               </div>
-              <div className="p-4 flex gap-2 item-start flex-col border-[1px] border-gray-300 rounded-lg">
-                <div className="flex gap-2">
+              <div className="p-4 flex gap-2 item-center flex-col border-[1px] border-gray-300 rounded-lg">
+                <div className="flex gap-2 mb-3">
                   <SquarePlus color="#f72b2b" />
                   <h2 className="text-lg text-left font-semibold">
                     Missing Keyword
@@ -317,8 +319,8 @@ const BlogAnalysis: React.FC = () => {
                   );
                 })}
               </div>
-              <div className="rounded-xl shadow-sm border border-gray-300 p-6">
-                <div className="flex items-center space-x-2 mb-6">
+              <div className="rounded-xl shadow-sm border border-gray-300 p-4">
+                <div className="flex items-center space-x-2 mb-3">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <h3 className="text-lg font-semibold">
                     Feedback For Improvements
@@ -336,7 +338,7 @@ const BlogAnalysis: React.FC = () => {
                   ))}
                 </div>
                 <div className="mb-4 mt-4 border-t-[1px] border-t-gray-300"></div>
-                <div className="flex items-center gap-2 space-x-2 mb-6">
+                <div className="flex items-center gap-2 space-x-2 mb-3">
                   <Lightbulb className="w-5 h-5 text-amber-500" />
                   <h3 className="text-lg font-semibold">Recommendations</h3>
                   <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
@@ -353,10 +355,12 @@ const BlogAnalysis: React.FC = () => {
                 </div>
               </div>
               <div className="p-4">
-                <h2 className="text-xl">Tip for good seo ranking</h2>
+                <h2 className="text-2xl font-semibold text-left">
+                  Tip for good seo ranking
+                </h2>
                 <div className="flex flex-col items-start gap-2">
-                  {result.industry_score?.map((item) => {
-                    return <p>{item}</p>;
+                  {result.industry_tip?.map((item, index) => {
+                    return <p key={index}>{item}</p>;
                   })}
                 </div>
               </div>

@@ -66,9 +66,9 @@ export async function getSingleBlogAnalysis(
       recommendation: z.array(z.string()).default([]),
       missing_keywords: z.array(z.string()).default([]),
       seo_headings_feedback: z.array(z.string()).default([]),
-      content_feedback: z.array(z.string()).default([]),
+      strong_content_feedback: z.array(z.string()).default([]),
       industry_tip: z.array(z.string()).default([]),
-      target_audience: z.string().default("")
+      target_audience: z.string().default(""),
     })
     .describe("Ai json response");
 
@@ -90,6 +90,7 @@ export async function getSingleBlogAnalysis(
                   - Never leave strings empty — always provide a clear description.
                   - Scores must be numbers between 0–100.
                   - Do not include raw search results,website page content, or extra info, just analyze it and do not hallacuation for content and give authentic informations.
+                  - Always provides detailed suggestions and feedback for heading, content, recommendations
 
                   ##Tasks:
                   1. Provide **overall SEO score** (0–100).
@@ -119,7 +120,7 @@ export async function getSingleBlogAnalysis(
                     "missing_keywords":string[],
                     "seo_headings_feedback": string[],
                     "strong_content_feedback":string[],
-                    "industry_score": string[],
+                    "industry_tip": string[],
                     "target_audience": string
                   }                  
                 `,

@@ -24,10 +24,11 @@ export interface AnalysisResult {
   content_quality_score?: number;
   feedback?: string[];
   recommendation?: string[];
-  industry_score?: string[] | [];
+  industry_tip?: string[] | [];
   seo_headings_feedback?: string[] | [];
   missing_keywords?: string[] | [];
-  target_audience?:string 
+  target_audience?:string,
+  strong_content_feedback?:string[] | []
 }
 
 export interface ModelProps {
