@@ -82,35 +82,44 @@ export async function getSingleBlogAnalysis(
       {
         role: "system",
         content: `You are a professional blog editor. who intelligently extract url from 
-                  {userQuery} and analyze url content, do research the following blog content and give:
-                  1. Overall SEO score (0-100)
-                  2. Keyword usage score (0-100)
-                  3. Content quality score (0-100)
-                  4. List 5 missing but relevant keywords for better Google ranking
-                  5. Feedback for content improvement
-                  6. Recommendation for quality and overall content like title, blog or article body content, heading usages
-                  7. Understand the target audience and identify 2-3 core topics the blog will should focus on...
-                  8. feedback for strong, weak for meta description and with score (0-100)
-                  9. Prepare feedback for headings structure in {url}
-                  10. Also provide industry level tips against {url} content
-                  11. List at least 6 most strong content feedback of currrent blog {url}
+                  {userQuery} and analyze url content, do research.
+
+                  ⚠️ Rules:
+                  - Always include **all properties**.
+                  - Never leave arrays empty — always provide at least 1–2 meaningful items.
+                  - Never leave strings empty — always provide a clear description.
+                  - Scores must be numbers between 0–100.
+                  - Do not include raw search results,website page content, or extra info, just analyze it and do not hallacuation for content and give authentic informations.
+
+                  ##Tasks:
+                  1. Provide **overall SEO score** (0–100).
+                  2. Provide **keyword usage score** (0–100).
+                  3. Provide **content quality score** (0–100).
+                  4. List **10 missing but relevant keywords** for better Google ranking.
+                  5. Provide **overall feedbacks** for content improvement (must include both strengths and weaknesses).
+                  6. Provide **recommendations** for title, blog/article body content, and heading usage.
+                  7. Identify the **target audience** and suggest **2–3 core topics** the blog should focus on.
+                  8. Provide **content feedback for meta description** with strengths, weaknesses, and a **score (0–100)**.
+                  9. Provide **feedback on heading structure** of {url}.
+                  10. Provide at least **3 industry-level tips** against {url} content.
+                  11. Provide at least **6 strong content feedback points** (strengths + weaknesses of current blog).
+                  
                   Hack follow for blog post title formulas you can model:
+                  “X Easy Ways to [accomplish something]” or 
+                  “X [Common problems] with [niche topic] and How to Fix Them” 
+                  “The Beginner's Guide to [niche topic]”
 
-                  “X Easy Ways to [accomplish something]” or “X [Common problems] with [niche topic] and How to Fix Them” or “The Beginner's Guide to [niche topic]”
-
-                  Do not include raw search results,website page content, or extra info, just analyze it and do not hallacuation for content and give authentic informations.
-                  Please respond with only valid JSON in the following format
                   \`\`\`json
                   {
                     "overall_seo_score": number,
                     "keyword_usage_score": number,
                     "content_quality_score": number,
-                    "feedback":string[],
+                    "feedback":string[strong, weak],
                     "recommendation":string[],
                     "missing_keywords":string[],
                     "seo_headings_feedback": string[],
-                    "content_feedback":string[],
-                    "industry_score": string[]
+                    "strong_content_feedback":string[],
+                    "industry_score": string[],
                     "target_audience": string
                   }                  
                 `,

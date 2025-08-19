@@ -18,6 +18,7 @@ import {
   ArrowUp,
   LibraryBig,
   SquarePlus,
+  Users,
 } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/utils/model";
 import api from "@/utils/api";
@@ -216,9 +217,10 @@ const BlogAnalysis: React.FC = () => {
             </h1>
 
             <div className="p-6 mt-4 rounded-2xl shadow-lg space-y-6 animate-fadeIn">
-              <div className="text-left text-lg border-[1px] border-gray-300 rounded-lg p-3">
+              <div className="flex gap-2 text-lg border-[1px] border-gray-300 rounded-lg p-3">
+                <Users color="#fba441" />
                 Target Audience
-                <p className="text-indigo-400">{result.target_audience}</p>
+                <p className="text-sm">{result.target_audience}</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ScoreCardDashboard
@@ -256,13 +258,15 @@ const BlogAnalysis: React.FC = () => {
                       </p>
                     </div>
                     <div className="w-8 h-8">
-                      <Target color="#10b981"/>
+                      <Target color="#10b981" />
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-left">
                       <p className="text-sm">Content Quality Score</p>
-                      <p className="text-3xl">{result?.content_quality_score}</p>
+                      <p className="text-3xl">
+                        {result?.content_quality_score}
+                      </p>
                       <p
                         className={`text-[16px] font-bold ${
                           getScoreStatus(result.content_quality_score || 0)
