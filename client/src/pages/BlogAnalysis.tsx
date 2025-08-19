@@ -15,9 +15,11 @@ import {
   Lightbulb,
   Target,
   TrendingUp,
+  ArrowUp,
+  LibraryBig,
+  SquarePlus,
 } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/utils/model";
-import { ArrowUp } from "lucide-react";
 import api from "@/utils/api";
 import { AnalysisResult } from "@/types/type";
 import {
@@ -228,7 +230,7 @@ const BlogAnalysis: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="text-left">
                       <p className="text-sm">Overall Score</p>
-                      <p className="text-xl">{result?.overall_seo_score}</p>
+                      <p className="text-3xl">{result?.overall_seo_score}</p>
                       <p
                         className={`text-[16px] font-bold ${
                           getScoreStatus(result.overall_seo_score || 0).color
@@ -237,14 +239,14 @@ const BlogAnalysis: React.FC = () => {
                         {getScoreStatus(result.overall_seo_score || 0).status}
                       </p>
                     </div>
-                    <div className="">
+                    <div className="-w-8 h-8">
                       <TrendingUp color="#3b82f6" />
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-left">
                       <p className="text-sm">Keyword Usage Score</p>
-                      <p className="text-xl">{result?.keyword_usage_score}</p>
+                      <p className="text-3xl">{result?.keyword_usage_score}</p>
                       <p
                         className={`text-[16px] font-bold ${
                           getScoreStatus(result.keyword_usage_score || 0).color
@@ -253,14 +255,14 @@ const BlogAnalysis: React.FC = () => {
                         {getScoreStatus(result.keyword_usage_score || 0).status}
                       </p>
                     </div>
-                    <div className="">
-                      <Target color="#10b981" />
+                    <div className="w-8 h-8">
+                      <Target color="#10b981"/>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-left">
                       <p className="text-sm">Content Quality Score</p>
-                      <p className="text-xl">{result?.content_quality_score}</p>
+                      <p className="text-3xl">{result?.content_quality_score}</p>
                       <p
                         className={`text-[16px] font-bold ${
                           getScoreStatus(result.content_quality_score || 0)
@@ -279,14 +281,29 @@ const BlogAnalysis: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 item-center border-[1px] border-gray-300 rounded-lg">
-                <h2 className="text-lg">Headings Feedbacks</h2>
-                {result.seo_headings_feedback?.map((item) => {
-                  return <p className="text-[16px]">{item}</p>;
+              <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
+                <div className="flex gap-2">
+                  <LibraryBig color="#4147fb" />
+                  <h2 className="text-lg text-left font-semibold">
+                    Headings Feedbacks
+                  </h2>
+                </div>
+                {result.seo_headings_feedback?.map((item, index) => {
+                  return (
+                    <div key={index} className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-[16px]">{item}</p>
+                    </div>
+                  );
                 })}
               </div>
               <div className="p-4 flex gap-2 item-start flex-col border-[1px] border-gray-300 rounded-lg">
-                <h2 className="text-lg">Missing Keyword</h2>
+                <div className="flex gap-2">
+                  <SquarePlus color="#f72b2b" />
+                  <h2 className="text-lg text-left font-semibold">
+                    Missing Keyword
+                  </h2>
+                </div>
                 {result?.missing_keywords?.map((item, index) => {
                   return (
                     <div key={index} className="flex items-start space-x-3">
@@ -296,7 +313,7 @@ const BlogAnalysis: React.FC = () => {
                   );
                 })}
               </div>
-              <div className="rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="rounded-xl shadow-sm border border-gray-300 p-6">
                 <div className="flex items-center space-x-2 mb-6">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <h3 className="text-lg font-semibold">
