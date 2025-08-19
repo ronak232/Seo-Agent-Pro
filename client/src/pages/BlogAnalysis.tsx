@@ -21,6 +21,7 @@ import {
   Users,
   CircleMinus,
   Sprout,
+  Rss,
 } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/utils/model";
 import api from "@/utils/api";
@@ -326,7 +327,7 @@ const BlogAnalysis: React.FC = () => {
                   );
                 })}
               </div>
-              <div className="rounded-xl shadow-sm border border-gray-300 p-4">
+              <div className="flex flex-col gap-2.5 rounded-xl shadow-sm border border-gray-300 p-4">
                 <div className="flex items-center mb-3 gap-2">
                   <CheckCircle2 className="text-green-500" />
                   <h3 className="text-lg font-semibold">Feedback</h3>
@@ -342,7 +343,23 @@ const BlogAnalysis: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <div className="mb-4 mt-4 border-t-[1px] border-t-gray-300"></div>
+                <div className="border-t-[1px] border-t-gray-300"></div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Rss color="#FFDE63" className="w-5 h-5" />
+                  <h3 className="text-lg font-semibold">Overall Feedback</h3>
+                  <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {result?.strong_content_feedback?.length} items
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {result?.strong_content_feedback?.map((item, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-[16px] text-left">{item}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t-[1px] border-t-gray-300"></div>
                 <div className="flex items-center gap-2 mb-3">
                   <Lightbulb className="w-5 h-5 text-amber-500" />
                   <h3 className="text-lg font-semibold">Recommendations</h3>
