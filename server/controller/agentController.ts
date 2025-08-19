@@ -84,7 +84,8 @@ export async function agent(req: Request, res: Response): Promise<void> {
     });
 
     const wordCounterTool = tool(
-      async ({ htmlContent }) => {
+      async (input: unknown) => {
+        const { htmlContent } = input as { htmlContent: string };
         // 1. Sanitize the HTML to remove scripts, styles, and unwanted tags
         const cleanText = sanitizeHtml(htmlContent, {
           allowedTags: [
