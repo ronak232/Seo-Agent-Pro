@@ -127,7 +127,9 @@ export async function agent(req: Request, res: Response): Promise<void> {
       {
         messages: [
           new HumanMessage(
-            "Analyze the following article text. Extract two things: 1. A list of the top 25 most relevant SEO keywords and entities. 2. A list of the main topics and sub-topics discussed.The remaining ones are the missing keywords."
+            `Analyze the following article URL content. Extract two things: 1. A list of the top 25 most relevant SEO keywords and entities. 2. A list of the main topics and sub-topics, heading structure, content lengths discussed.
+            {url}
+            Give me JSON format with current keywords, topics/subtopics, and missing keywords for better SEO.`
           ),
         ],
       },
