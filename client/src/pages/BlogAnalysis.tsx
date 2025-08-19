@@ -88,10 +88,13 @@ const BlogAnalysis: React.FC = () => {
       setLoading(true);
       setResult(null);
 
-      const res = await api.post(`http://localhost:5000/api/v1/analyze`, {
-        webSearchModel: webSearchModel,
-        prompt,
-      });
+      const res = await api.post(
+        `${import.meta.env.VITE_APP_BASE_URL}/api/v1/analyze`,
+        {
+          webSearchModel: webSearchModel,
+          prompt,
+        }
+      );
       const data = await res.data.responseData;
       setLoading(false);
       setResult(data);
@@ -213,9 +216,7 @@ const BlogAnalysis: React.FC = () => {
             <div className="p-6 mt-4 rounded-2xl shadow-lg space-y-6 animate-fadeIn">
               <div className="text-left text-lg border-[1px] border-gray-300 rounded-lg p-3">
                 Target Audience
-                <p className="text-indigo-400">
-                  {result.target_audience}
-                </p>
+                <p className="text-indigo-400">{result.target_audience}</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <ScoreCardDashboard
