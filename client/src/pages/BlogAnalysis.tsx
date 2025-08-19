@@ -289,7 +289,7 @@ const BlogAnalysis: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
+              <div className="flex flex-col gap-4 items-end border-[1px] border-gray-300 rounded-lg p-4">
                 <div className="flex gap-2">
                   <LibraryBig color="#4147fb" />
                   <h2 className="text-lg text-left font-semibold">
@@ -298,14 +298,14 @@ const BlogAnalysis: React.FC = () => {
                 </div>
                 {result.seo_headings_feedback?.map((item, index) => {
                   return (
-                    <div key={index} className="flex items-center space-x-3">
+                    <div key={index} className="flex items-start space-x-3">
                       <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                       <p className="text-[16px] text-left">{item}</p>
                     </div>
                   );
                 })}
               </div>
-              <div className="p-4 flex gap-2 item-center flex-col border-[1px] border-gray-300 rounded-lg">
+              <div className="p-4 flex gap-2 item-end flex-col border-[1px] border-gray-300 rounded-lg">
                 <div className="flex gap-2">
                   <SquarePlus color="#f72b2b" />
                   <h2 className="text-lg text-left font-semibold">
@@ -314,7 +314,7 @@ const BlogAnalysis: React.FC = () => {
                 </div>
                 {result?.missing_keywords?.map((item, index) => {
                   return (
-                    <div key={index} className="flex items-center space-x-3">
+                    <div key={index} className="flex items-start space-x-3">
                       <CircleMinus
                         color="#e32626"
                         className="mt-0.5 flex-shrink-0"
@@ -327,10 +327,10 @@ const BlogAnalysis: React.FC = () => {
                 })}
               </div>
               <div className="rounded-xl shadow-sm border border-gray-300 p-4">
-                <div className="flex items-center mb-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <div className="flex items-center mb-3 gap-2">
+                  <CheckCircle2 className="text-green-500" />
                   <h3 className="text-lg font-semibold">
-                    Feedback For Improvements
+                    Feedback
                   </h3>
                   <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {result?.feedback?.length} items
@@ -338,7 +338,7 @@ const BlogAnalysis: React.FC = () => {
                 </div>
                 <div className="space-y-4">
                   {result?.feedback?.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3">
+                    <div key={index} className="flex items-start space-x-3">
                       <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                       <p className="text-[16px] text-left">{item}</p>
                     </div>
@@ -354,16 +354,16 @@ const BlogAnalysis: React.FC = () => {
                 </div>
                 <div className="space-y-4">
                   {result?.recommendation?.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3">
+                    <div key={index} className="flex items-start space-x-3">
                       <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                       <p className="text-[16px] text-left">{item}</p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="flex flex-col gap-4 items-center border-[1px] border-gray-300 rounded-lg p-4">
-                <div>
-                  <Sprout color="#00ffb3" /> 
+              <div className="flex flex-col gap-4 border-[1px] border-gray-300 rounded-lg p-4">
+                <div className="flex gap-2 items-center">
+                  <Sprout color="#00ffb3" />
                   <h2 className="text-2xl font-semibold text-left">
                     Tip for good seo ranking
                   </h2>
@@ -371,7 +371,7 @@ const BlogAnalysis: React.FC = () => {
                 <div className="flex flex-col items-center gap-2">
                   {result.industry_tip?.map((item, index) => {
                     return (
-                      <div key={index} className="flex items-center space-x-3">
+                      <div key={index} className="flex items-start space-x-3">
                         <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                         <p className="text-[16px] text-left">{item}</p>
                       </div>
