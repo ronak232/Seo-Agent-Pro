@@ -94,7 +94,7 @@ const BlogAnalysis: React.FC = () => {
       setResult(null);
 
       const res = await api.post(
-        `http://localhost:5000/api/v1/analyze`,
+        `${import.meta.env.VITE_APP_BASE_URL}/api/v1/analyze`,
         {
           webSearchModel: webSearchModel,
           prompt,
@@ -329,9 +329,7 @@ const BlogAnalysis: React.FC = () => {
               <div className="rounded-xl shadow-sm border border-gray-300 p-4">
                 <div className="flex items-center mb-3 gap-2">
                   <CheckCircle2 className="text-green-500" />
-                  <h3 className="text-lg font-semibold">
-                    Feedback
-                  </h3>
+                  <h3 className="text-lg font-semibold">Feedback</h3>
                   <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                     {result?.feedback?.length} items
                   </span>
