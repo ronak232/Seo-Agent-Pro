@@ -115,14 +115,16 @@ export async function getSingleBlogAnalysis(
                     "overall_seo_score": number,
                     "keyword_usage_score": number,
                     "content_quality_score": number,
-                    "feedback":string[strong, weak],
+                    "feedback":string[],
                     "recommendation":string[],
                     "missing_keywords":string[],
                     "seo_headings_feedback": string[],
                     "strong_content_feedback":string[],
                     "industry_tip": string[],
                     "target_audience": string
-                  }                  
+                  }      
+                    
+                  Strictly return response in json format...
                 `,
       },
     ],
@@ -130,22 +132,29 @@ export async function getSingleBlogAnalysis(
     top_p: 1,
     stop: null,
     tool_choice: "auto",
-    include_reasoning: true,
     seed: 1,
-    reasoning_effort: "low",
+    reasoning_effort: "medium",
     tools: [
       {
         type: "browser_search",
       },
     ],
+    include_reasoning: true,
   });
-  let response;
-  let rawResponse = chatCompletion.choices[0].message.content ?? "";
+
+  let rawResponse = chatCompletion.choices[0]?.message?.content ?? "";
+  let reasoningText = chatCompletion.choices[0]?.message?.reasoning ?? "";
+
   try {
     let getJson = extractJsonFromString(rawResponse);
-    response = responseSchema.parse(getJson);
-    return response;
+    let response = responseSchema.parse(getJson);
+    return {
+      response,
+      reasoningText,
+      hasReasoning: reasoningText ? true : false,
+    };
   } catch (error) {
+    console.log(error.message);
     throw new Error("Response did not match ");
   }
 }
@@ -153,5 +162,17 @@ export async function getSingleBlogAnalysis(
 function extractJsonFromString(data: string) {
   const regex = /[{\[]{1}([,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]|".*?")+[}\]]{1}/gis;
   const matches = data?.match(regex) ?? [];
-  return Object.assign({}, ...matches.map((m) => JSON.parse(m)));
+
+  const objects = [];
+
+  for (const m of matches) {
+    try {
+      objects.push(JSON.parse(m));
+    } catch (err) {
+      console.error("Skipping invalid JSON snippet:", err);
+    }
+  }
+
+  // Merge them, or return first valid object
+  return Object.assign({}, ...objects);
 }

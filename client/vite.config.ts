@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api": {
           target: base_url,
-          changeOrigin: true, 
+          changeOrigin: true,
         },
       },
       plugins: [react(), tailwindcss(), tsconfigPaths()],

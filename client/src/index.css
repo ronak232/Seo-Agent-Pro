@@ -31,7 +31,7 @@ body {
 }
 
 [data-theme="dark"] {
-  --background-color: linear-gradient(to bottom, #151d2d, #040404);
+  --background-color: linear-gradient(to bottom, #151617, #121212);
   --text-color: white;
 }
 body {

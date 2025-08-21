@@ -37,28 +37,28 @@ const AnalysisForm: React.FC<Props> = ({
 
   return (
     <>
-      <section className="relative overflow-hidden py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-8 backdrop-blur-md p-10 rounded-3xl shadow-2xl border border-white/40 relative z-10">
+      <section className="relative py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-8 p-10 rounded-3xl shadow-2xl border-[1px] border-white/40 relative z-10">
           <div className="flex justify-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium shadow-sm">
               <Sparkles className="w-4 h-4" /> AI-Powered Analysis
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-accent leading-tight">
+          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
             Analyze Any Content Instantly
           </h1>
         </div>
 
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-200/30 to-transparent pointer-events-none z-0" />
       </section>
-      <div className="bg-gray-800 bg-opacity-50 backdrop-blur-lg rounded-xl p-6 border border-gray-700">
-        <h2 className="text-xl font-semibold mb-6 flex items-center">
-          <Search className="w-5 h-5 mr-2 text-blue-400" />
-          Blog URL Comparison
-        </h2>
+      <div className="bg-[#292929] bg-opacity-80 backdrop-blur-lg rounded-xl p-6 text-white">
+        <div className="flex gap-2 items-center mb-5">
+          <Search className="w-5 h-5 text-blue-400" />
+          <h2 className="text-xl font-semibold">Blog URL Comparison</h2>
+        </div>
         <form className="flex flex-col gap-2.5">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium mb-2">
               Your Blog URL
             </label>
             <input
@@ -71,7 +71,7 @@ const AnalysisForm: React.FC<Props> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium mb-2">
               Competitor Blog URL
             </label>
             <input
@@ -92,7 +92,7 @@ const AnalysisForm: React.FC<Props> = ({
         )}
 
         <div className="flex gap-2 items-center mt-3.5 justify-self-end">
-          <div className="bg-gray-700 rounded-lg p-1 flex gap-2 items-center pt-1 pb-1 border-2 border-gray-400 relative models">
+          <div className="bg-gray-700 rounded-lg p-1 flex gap-2 items-center pt-1 pb-1 relative models">
             <Cpu color="#ffffff" size="15" />
             <Listbox value={selectedModel} onChange={setSelectedModel}>
               <ListboxButton className="text-[12px] capitalize font-bold min-w-32 w-full text-left flex gap-1.5 items-center justify-evenly focus:outline-0 cursor-pointer">

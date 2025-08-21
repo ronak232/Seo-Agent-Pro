@@ -22,6 +22,8 @@ import {
   CircleMinus,
   Sprout,
   Rss,
+  CircleStop,
+  Sparkles,
 } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/utils/model";
 import api from "@/utils/api";
@@ -46,6 +48,7 @@ import {
   PieController,
 } from "chart.js";
 import { getScoreStatus } from "@/utils/calculateStatus";
+import { ThinkingPlaceholder } from "@/components/ThinkingPlaceholder";
 
 export interface ScoreCardProps {
   label: string;
@@ -77,10 +80,15 @@ const BlogAnalysis: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState("");
+
   const [webSearchModel, setWebSearchModel] = useState<string>(
     webModelsProvider[0]?.model || ""
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showReasoning, setShowReasoning] = useState<boolean>(false);
+  const [reasoning, setReasoning] = useState<string>("");
+  const controllerRef = useRef<AbortController | null>(null);
+  const reasoningFinishedRef = useRef<(() => void) | null>(null);
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,22 +98,42 @@ const BlogAnalysis: React.FC = () => {
       return;
     }
 
+    controllerRef.current = new AbortController();
+
     try {
       setLoading(true);
       setResult(null);
 
       const res = await api.post(
-        `${import.meta.env.VITE_APP_BASE_URL}/api/v1/analyze`,
+        `http://localhost:5000/api/v1/analyze`,
         {
           webSearchModel: webSearchModel,
           prompt,
+        },
+        {
+          signal: controllerRef.current.signal,
         }
       );
-      const data = await res.data.responseData;
-      setLoading(false);
-      setResult(data);
+      const { response, reasoningText, hasReasoning } = await res.data
+        .llmResponse;
+      const reasoning = reasoningText == null ? "" : String(reasoningText);
+      if (reasoningText && hasReasoning) {
+        setReasoning(reasoning);
+        setShowReasoning(true);
 
-      // Mock data for now
+        await new Promise<void>((resolve) => {
+          reasoningFinishedRef.current = resolve;
+        });
+
+        setShowReasoning(false);
+        setTimeout(() => setResult(response), 100);
+        setLoading(false);
+        reasoningFinishedRef.current = null;
+      } else {
+        setLoading(false);
+        setShowReasoning(false);
+        setResult(response);
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -113,6 +141,8 @@ const BlogAnalysis: React.FC = () => {
         setError(String(err)); // fallback
       }
       setLoading(false);
+      setShowReasoning(false);
+      reasoningFinishedRef.current = null;
     } finally {
       setPrompt("");
     }
@@ -121,6 +151,12 @@ const BlogAnalysis: React.FC = () => {
   const handleChange = (value: string) => {
     const backendModel = getWebSearchSelectedModel(value) || "";
     setWebSearchModel(backendModel);
+  };
+
+  const handleCancelRequest = () => {
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
   };
 
   useEffect(() => {
@@ -132,87 +168,111 @@ const BlogAnalysis: React.FC = () => {
   }, [prompt]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden py-30 px-3">
+    <div className="min-h-screen relative py-30 px-3">
       <div className="max-w-6xl mx-auto text-center">
-        <section className="relative overflow-hidden py-10 px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-accent pb-3 leading-tight">
+        <section className="relative py-10 px-6">
+          <div className="max-w-4xl mx-auto text-center space-y-8 rounded-3xl shadow-2xl border-[1px] border-white/40 relative z-10 mb-16">
+            <div className="inline-flex items-center gap-2 mt-4 mb-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium shadow-sm">
+              <Sparkles className="w-4 h-4" /> AI-Powered Analysis
+            </div>
+            <h1 className="text-4xl md:text-5xl mb-3 font-extrabold leading-tight">
               Blog Analysis
             </h1>
-            <p className="text-cyan-600 mb-8 font-medium text-md font-domine">
+            <p className="mb-8 font-medium text-md font-domine">
               Paste your blog URL below to get AI-powered SEO insights and
               improvement suggestions.
             </p>
           </div>
+          <div className="flex gap-4 flex-col max-w-4xl mx-auto">
+            <div className="relative border-[2px] border-green-400 ring-green-400 focus:ring-green-500 rounded-lg p-2">
+              <textarea
+                ref={textareaRef}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Ask a question..."
+                className="w-full min-h-[10px] max-h-[200px] resize-none bg-transparent focus:outline-0 placeholder-gray-400 font-medium text-base leading-relaxed p-2 rounded-xl"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              />
+
+              <div className="flex items-stretch justify-end gap-2 p-1 h-full">
+                <div className="bg-black/90 rounded-lg p-1 flex gap-2 items-center border-[1px] border-gray-100 relative models h-full hover:bg-black/85">
+                  <Cpu color="#ffffff" size="15" />
+                  <Listbox value={webSearchModel} onChange={handleChange}>
+                    <ListboxButton className="text-[12px] capitalize min-w-32 w-full text-left flex gap-1.5 items-center justify-evenly focus:outline-0 cursor-pointer font-sans font-medium text-white">
+                      {
+                        webModelsProvider.find(
+                          (m) => m.model === webSearchModel
+                        )?.modelName
+                      }
+                      <ChevronsUpDown size="15" className="models-btn" />
+                    </ListboxButton>
+                    <ListboxOptions className=" flex flex-col gap-1.5 absolute top-6 md:top-6 -right-5 z-50 mt-1 bg-white border-2 border-gray-200 rounded-lg min-h-full overflow-auto model-options focus-within:outline-0 p-4 shadow-sm text-left">
+                      <p className="text-[10px] text-center border-b-[1px] mb-1.5 text-white">
+                        Models
+                      </p>
+                      {webModelsProvider.map((item) => (
+                        <ListboxOption
+                          key={item.modelName}
+                          value={item.model}
+                          className="hover:bg-gray-500 cursor-pointer border-b-[1px] border-gray-400 p-1"
+                        >
+                          <div>
+                            <span className="font-semibold text-white text-[12px]">
+                              {item.modelName}
+                            </span>
+                            <div className="badge badge-xs ms-1">
+                              {item.category === "" ? "" : item.category}
+                            </div>
+                            <span className="block text-xs text-gray-400">
+                              {item.desc}
+                            </span>
+                          </div>
+                        </ListboxOption>
+                      ))}
+                    </ListboxOptions>
+                  </Listbox>
+                </div>
+
+                {!loading ? (
+                  <button
+                    className="flex items-center justify-center w-8 rounded-lg bg-black hover:bg-orange-600 text-white transition-all duration-200 cursor-pointer min-h-full"
+                    onClick={handleAnalyze}
+                  >
+                    <ArrowUp size="20" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleCancelRequest}
+                    type="submit"
+                    className="bg-black cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed px-1 py-1 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+                  >
+                    <CircleStop color="#ffffff" size="15" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </section>
 
-        <div className="relative max-w-3xl mx-auto border-[2px] border-green-400 ring-green-400 focus:ring-green-500 rounded-lg p-2">
-          <textarea
-            ref={textareaRef}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ask a question..."
-            className="w-full min-h-[10px] max-h-[200px] resize-none bg-transparent focus:outline-0 placeholder-gray-400 font-medium text-base leading-relaxed p-2 rounded-xl"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          />
-
-          <div className="flex items-stretch justify-end gap-2 p-1 h-full">
-            <div className="bg-black/90 rounded-lg p-1 flex gap-2 items-center border-[1px] border-gray-100 relative models h-full hover:bg-black/85">
-              <Cpu color="#ffffff" size="15" />
-              <Listbox value={webSearchModel} onChange={handleChange}>
-                <ListboxButton className="text-[12px] capitalize min-w-32 w-full text-left flex gap-1.5 items-center justify-evenly focus:outline-0 cursor-pointer font-sans font-medium text-white">
-                  {
-                    webModelsProvider.find((m) => m.model === webSearchModel)
-                      ?.modelName
-                  }
-                  <ChevronsUpDown size="15" className="models-btn" />
-                </ListboxButton>
-                <ListboxOptions className=" flex flex-col gap-1.5 absolute top-6 md:top-6 -right-5 z-50 mt-1 bg-white border-2 border-gray-200 rounded-lg min-h-full overflow-auto model-options focus-within:outline-0 p-4 shadow-sm text-left">
-                  <p className="text-[10px] text-center border-b-[1px] mb-1.5 text-white">
-                    Models
-                  </p>
-                  {webModelsProvider.map((item) => (
-                    <ListboxOption
-                      key={item.modelName}
-                      value={item.model}
-                      className="hover:bg-gray-500 cursor-pointer border-b-[1px] border-gray-400 p-1"
-                    >
-                      <div>
-                        <span className="font-semibold text-white text-[12px]">
-                          {item.modelName}
-                        </span>
-                        <div className="badge badge-xs ms-1">
-                          {item.category === "" ? "" : item.category}
-                        </div>
-                        <span className="block text-xs text-gray-400">
-                          {item.desc}
-                        </span>
-                      </div>
-                    </ListboxOption>
-                  ))}
-                </ListboxOptions>
-              </Listbox>
-            </div>
-
-            <button
-              className="flex items-center justify-center w-8 rounded-lg bg-black hover:bg-orange-600 text-white transition-all duration-200 cursor-pointer min-h-full"
-              onClick={handleAnalyze}
-            >
-              <ArrowUp size="20" />
-            </button>
-          </div>
-        </div>
         {error && <p className="text-red-400 mb-6">{error}</p>}
 
-        {loading && (
+        {/* {loading && (
           <div className="flex justify-center items-center py-10">
             <div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full"></div>
           </div>
+        )} */}
+        {showReasoning && (
+          <ThinkingPlaceholder
+            reasoning={reasoning}
+            onFinished={() => {
+              reasoningFinishedRef.current?.();
+              reasoningFinishedRef.current = null;
+            }}
+          />
         )}
-
         {result && (
           <>
             <h1 className="text-2xl font-semibold mb-4 mt-4">

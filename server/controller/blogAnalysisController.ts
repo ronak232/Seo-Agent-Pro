@@ -8,11 +8,8 @@ export async function blogAnalysis(req: Request, res: Response): Promise<void> {
 
   // analysis
   try {
-    const getResponse = await getSingleBlogAnalysis(webSearchModel, prompt);
-
-    res.status(200).json({
-      responseData: getResponse,
-    });
+    const llmResponse = await getSingleBlogAnalysis(webSearchModel, prompt);
+    res.status(200).json({ llmResponse });
   } catch (error) {
     if (error instanceof Error) {
       console.error("error response ", error.message);
