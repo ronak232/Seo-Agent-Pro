@@ -154,7 +154,11 @@ export async function getSingleBlogAnalysis(
       hasReasoning: reasoningText ? true : false,
     };
   } catch (error) {
-    console.log(error.message);
+    if (error instanceof Error) {
+      console.log(error.message);
+    } else {
+      console.log(String(error));
+    }
     throw new Error("Response did not match ");
   }
 }
