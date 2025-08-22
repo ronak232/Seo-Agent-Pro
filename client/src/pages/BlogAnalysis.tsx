@@ -105,7 +105,7 @@ const BlogAnalysis: React.FC = () => {
       setResult(null);
 
       const res = await api.post(
-        `http://localhost:5000/api/v1/analyze`,
+        `${import.meta.env.VITE_APP_BASE_URL}/api/v1/analyze`,
         {
           webSearchModel: webSearchModel,
           prompt,
