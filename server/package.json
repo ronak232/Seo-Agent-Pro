@@ -47,7 +47,8 @@
   },
   "overrides": {
     "@browserbasehq/stagehand": {
-      "zod": "^4.0.17"
+      "zod": "^4.0.17",
+      "openai":"^5.13.1"
     }
   }
 }
