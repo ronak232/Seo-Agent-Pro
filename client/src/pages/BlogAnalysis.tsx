@@ -21,9 +21,10 @@ import {
   Users,
   CircleMinus,
   Sprout,
-  Rss,
   CircleStop,
   Sparkles,
+  PlusCircle,
+  MinusCircle,
 } from "lucide-react";
 import { getWebSearchSelectedModel } from "@/utils/model";
 import api from "@/utils/api";
@@ -54,6 +55,15 @@ export interface ScoreCardProps {
   label: string;
   value: number;
   color: string;
+}
+
+export interface CustomDashboard {
+  blogLabel?: string;
+  datas?: number[] | number;
+  mixedData?: number[] | number;
+  labels?: string[] | [];
+  compareLabel?: string;
+  className?: string;
 }
 
 ChartJS.register(
@@ -103,7 +113,7 @@ const BlogAnalysis: React.FC = () => {
     try {
       setLoading(true);
       setResult(null);
-
+      setShowReasoning(true);
       const res = await api.post(
         `${import.meta.env.VITE_APP_BASE_URL}/api/v1/analyze`,
         {
@@ -126,7 +136,7 @@ const BlogAnalysis: React.FC = () => {
         });
 
         setShowReasoning(false);
-        setTimeout(() => setResult(response), 100);
+        setTimeout(() => setResult(response), 400);
         setLoading(false);
         reasoningFinishedRef.current = null;
       } else {
@@ -259,11 +269,6 @@ const BlogAnalysis: React.FC = () => {
 
         {error && <p className="text-red-400 mb-6">{error}</p>}
 
-        {/* {loading && (
-          <div className="flex justify-center items-center py-10">
-            <div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full"></div>
-          </div>
-        )} */}
         {showReasoning && (
           <ThinkingPlaceholder
             reasoning={reasoning}
@@ -350,6 +355,51 @@ const BlogAnalysis: React.FC = () => {
                   </div>
                 </div>
               </div>
+              <div className="flex flex-col gap-2.5 rounded-xl shadow-sm border border-gray-300 p-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="text-green-500" />
+                  <h3 className="text-lg font-semibold">Feedback</h3>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <p className="text-lg text-left">Pros</p>
+                  {result?.overall_feedback?.pros.content?.map(
+                    (item, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-[16px] text-left">{item}</p>
+                      </div>
+                    )
+                  )}
+                </div>
+                <div className="flex flex-col gap-3">
+                  <p className="text-lg text-left">Cons</p>
+                  {result?.overall_feedback?.cons.content.map((item, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-[16px] text-left">{item}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t-[1px] border-t-gray-300"></div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Lightbulb className="w-5 h-5 text-amber-500" />
+                  <h3 className="text-lg font-semibold">Recommendations</h3>
+                  <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {result?.overall_feedback?.cons?.content.length} items
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {result?.overall_feedback?.cons?.content.map(
+                    (item, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-[16px] text-left">{item}</p>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
               <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
                 <div className="flex gap-2">
                   <LibraryBig color="#4147fb" />
@@ -357,14 +407,52 @@ const BlogAnalysis: React.FC = () => {
                     Headings Feedbacks
                   </h2>
                 </div>
-                {result.seo_headings_feedback?.map((item, index) => {
-                  return (
-                    <div key={index} className="flex items-start space-x-3">
-                      <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                      <p className="text-[16px] text-left">{item}</p>
-                    </div>
-                  );
-                })}
+                {result.heading_recommendations?.map(
+                  (item: string, index: number) => {
+                    return (
+                      <div key={index} className="flex items-start space-x-3">
+                        <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-[16px] text-left">{item}</p>
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+              <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
+                <div className="flex gap-2">
+                  <LibraryBig color="#4147fb" />
+                  <h2 className="text-lg text-left font-semibold">
+                    Title Feedbacks
+                  </h2>
+                </div>
+                {result.title_recommendations?.map(
+                  (item: string, index: number) => {
+                    return (
+                      <div key={index} className="flex items-start space-x-3">
+                        <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-[16px] text-left">{item}</p>
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+              <div className="flex flex-col gap-4 items-start border-[1px] border-gray-300 rounded-lg p-4">
+                <div className="flex gap-2">
+                  <LibraryBig color="#4147fb" />
+                  <h2 className="text-lg text-left font-semibold">
+                    Body Feedbacks
+                  </h2>
+                </div>
+                {result.body_recommendations?.map(
+                  (item: string, index: number) => {
+                    return (
+                      <div key={index} className="flex items-start space-x-3">
+                        <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-[16px] text-left">{item}</p>
+                      </div>
+                    );
+                  }
+                )}
               </div>
               <div className="p-4 flex gap-2 item-end flex-col border-[1px] border-gray-300 rounded-lg">
                 <div className="flex gap-2">
@@ -375,10 +463,9 @@ const BlogAnalysis: React.FC = () => {
                 </div>
                 {result?.missing_keywords?.map((item, index) => {
                   return (
-                    <div key={index} className="flex items-start space-x-3">
+                    <div key={index} className="flex items-center space-x-3">
                       <CircleMinus
-                        color="#e32626"
-                        className="mt-0.5 flex-shrink-0"
+                        className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0"
                         size="10"
                         strokeWidth="1.5"
                       />
@@ -387,53 +474,54 @@ const BlogAnalysis: React.FC = () => {
                   );
                 })}
               </div>
-              <div className="flex flex-col gap-2.5 rounded-xl shadow-sm border border-gray-300 p-4">
-                <div className="flex items-center mb-3 gap-2">
-                  <CheckCircle2 className="text-green-500" />
-                  <h3 className="text-lg font-semibold">Feedback</h3>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    {result?.feedback?.length} items
-                  </span>
+              <div className="p-4 flex gap-2 item-end flex-col border-[1px] border-gray-300 rounded-lg">
+                <div className="flex gap-2">
+                  <SquarePlus color="#f72b2b" />
+                  <h2 className="text-lg text-left font-semibold">
+                    Meta Description Feedabck
+                  </h2>
                 </div>
-                <div className="space-y-4">
-                  {result?.feedback?.map((item, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <p className="text-[16px] text-left">{item}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t-[1px] border-t-gray-300"></div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Rss color="#FFDE63" className="w-5 h-5" />
-                  <h3 className="text-lg font-semibold">Overall Feedback</h3>
-                  <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    {result?.strong_content_feedback?.length} items
-                  </span>
-                </div>
-                <div className="space-y-4">
-                  {result?.strong_content_feedback?.map((item, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                      <p className="text-[16px] text-left">{item}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t-[1px] border-t-gray-300"></div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Lightbulb className="w-5 h-5 text-amber-500" />
-                  <h3 className="text-lg font-semibold">Recommendations</h3>
-                  <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                    {result?.recommendation?.length} items
-                  </span>
-                </div>
-                <div className="space-y-4">
-                  {result?.recommendation?.map((item, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                      <p className="text-[16px] text-left">{item}</p>
-                    </div>
-                  ))}
+                <div className="flex gap-3 justify-between">
+                  <div className="flex flex-col w-full gap-4">
+                    {result.meta_description_feedback?.pros?.map(
+                      (item, index) => {
+                        return (
+                          <div className="flex gap-2 items-center">
+                            <PlusCircle
+                              key={index}
+                              className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0"
+                            />
+                            <p className="text-[16px] text-left">{item}</p>
+                          </div>
+                        );
+                      }
+                    )}
+                    <div className="border-t-[1px] border-t-gray-300"></div>
+                    <h3 className="text-left text-[14px]">Cons</h3>
+                    {result.meta_description_feedback?.cons?.map(
+                      (item, index) => {
+                        return (
+                          <div className="flex gap-2 item-center">
+                            <MinusCircle
+                              key={index}
+                              className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0"
+                            />
+                            <p className="text-[16px] text-left">{item}</p>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                  <ContentScoreChart
+                    blogLabel="Your Score"
+                    datas={[result.meta_description_feedback?.score ?? 0]}
+                    mixedData={[
+                      result.meta_description_feedback?.recommended_score ?? 0,
+                    ]}
+                    compareLabel="Industry Score"
+                    className="w-full"
+                    labels={["User", "Target"]}
+                  />
                 </div>
               </div>
               <div className="flex flex-col gap-4 border-[1px] border-gray-300 rounded-lg p-4">
@@ -444,9 +532,9 @@ const BlogAnalysis: React.FC = () => {
                   </h2>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {result.industry_tip?.map((item, index) => {
+                  {result.industry_tips?.map((item, index) => {
                     return (
-                      <div key={index} className="flex gap-2">
+                      <div key={index} className="flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                         <p className="text-[16px] text-left">{item}</p>
                       </div>
@@ -478,7 +566,7 @@ const ScoreCardDashboard = ({
 
       if (scores) {
         new ChartJS(scores, {
-          type: "pie",
+          type: "bar",
           data: {
             labels: ["Overall Score", "Keywords Score", "Content Score"],
             datasets: [
@@ -528,4 +616,77 @@ const ScoreCardDashboard = ({
   );
 };
 
+const ContentScoreChart = ({
+  labels,
+  datas,
+  mixedData,
+  blogLabel,
+  compareLabel,
+  className,
+}: CustomDashboard) => {
+  const chartDatas = Array.isArray(datas) ? datas : [datas ?? 0];
+  const chartMixedData = Array.isArray(mixedData)
+    ? mixedData
+    : [mixedData ?? 0];
+  useEffect(() => {
+    const destroy = (id: string) => {
+      ChartJS.getChart(id)?.destroy();
+    };
+
+    const dashboardData = () => {
+      destroy("gap-score");
+      const gap_score = document.getElementById(
+        "gap-score"
+      ) as HTMLCanvasElement;
+
+      if (gap_score) {
+        new ChartJS(gap_score, {
+          type: "bar",
+          data: {
+            datasets: [
+              {
+                type: "bar",
+                data: chartDatas,
+                backgroundColor: "#F93827",
+                borderColor: "rgb(54, 162, 235)",
+                label: blogLabel,
+              },
+              {
+                type: "bar",
+                data: chartMixedData,
+                borderColor: "rgb(54, 162, 235)",
+                backgroundColor: "#16C47F",
+                label: compareLabel,
+              },
+            ],
+            labels: [labels],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                labels: {
+                  font: {
+                    size: 16,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+    };
+    dashboardData();
+    return () => {
+      ["gap-score"].forEach(destroy);
+    };
+  }, [labels, datas, blogLabel, mixedData, compareLabel]);
+
+  return (
+    <div className={`p-2 border-[1px] border-gray-300 rounded-lg ${className}`}>
+      <canvas id="gap-score" aria-label="score" role="img" />
+    </div>
+  );
+};
 export default BlogAnalysis;

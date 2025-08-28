@@ -62,13 +62,27 @@ export async function getSingleBlogAnalysis(
       overall_seo_score: z.number().default(0),
       keyword_usage_score: z.number().default(0),
       content_quality_score: z.number().default(0),
-      feedback: z.array(z.string()).default([]),
-      recommendation: z.array(z.string()).default([]),
-      missing_keywords: z.array(z.string()).default([]),
-      seo_headings_feedback: z.array(z.string()).default([]),
-      strong_content_feedback: z.array(z.string()).default([]),
-      industry_tip: z.array(z.string()).default([]),
+      overall_feedback: z.object({
+        pros: z.object({
+          content: z.array(z.string()).default([]),
+        }),
+        cons: z.object({
+          content: z.array(z.string()).default([]),
+        }),
+      }),
+
+      title_recommendations: z.array(z.string()).default([]),
+      body_recommendations: z.array(z.string()).default([]),
+      heading_recommendations: z.array(z.string()).default([]),
+      meta_description_feedback: z.object({
+        pros: z.array(z.string()).default([]),
+        cons: z.array(z.string()).default([]),
+        score: z.number().default(0),
+        recommended_score: z.number().default(0),
+      }),
+      industry_tips: z.array(z.string()).default([]),
       target_audience: z.string().default(""),
+      missing_keywords: z.array(z.string()).default([]),
     })
     .describe("Ai json response");
 
@@ -96,14 +110,13 @@ export async function getSingleBlogAnalysis(
                   1. Provide **overall SEO score** (0–100).
                   2. Provide **keyword usage score** (0–100).
                   3. Provide **content quality score** (0–100).
-                  4. List **10 missing but relevant keywords** for better Google ranking.
-                  5. Provide **overall feedbacks** for content improvement (must include both strengths and weaknesses).
-                  6. Provide **recommendations** for title, blog/article body content, and heading usage.
-                  7. Identify the **target audience** and suggest **2–3 core topics** the blog should focus on.
-                  8. Provide **content feedback for meta description** with strengths, weaknesses, and a **score (0–100)**.
-                  9. Provide **feedback on heading structure** of {url}.
-                  10. Provide at least **3 industry-level tips** against {url} content.
-                  11. Provide at least **6 strong content feedback points** (strengths + weaknesses of current blog).
+                  4. Provide list of **10 missing but relevant keywords** for better Google ranking.
+                  5. Provide **overall feedbacks** for content improvement (must include both pros and cons).
+                  6. Provide **feebacks** for title, blog/article body content, and heading usage.
+                  7. Identify the **target audience** and suggest **2-3 core topics** the blog should focus on.
+                  
+                  8. Provide at least **5 industry-level tips** against {url} content.
+                  9. Provide **meta description feedback** (pros + cons + current_blog_score + recommneded_score).
                   
                   Hack follow for blog post title formulas you can model:
                   “X Easy Ways to [accomplish something]” or 
@@ -115,14 +128,27 @@ export async function getSingleBlogAnalysis(
                     "overall_seo_score": number,
                     "keyword_usage_score": number,
                     "content_quality_score": number,
-                    "feedback":string[],
-                    "recommendation":string[],
-                    "missing_keywords":string[],
-                    "seo_headings_feedback": string[],
-                    "strong_content_feedback":string[],
-                    "industry_tip": string[],
-                    "target_audience": string
-                  }      
+
+                    "overall_feedback": {
+                      "pros": {content:[]}
+                      "cons": {content:[]}
+                    },            
+
+                    "title_recommendations": [],  
+                    "body_recommendations": [],   
+                    "heading_recommendations": [], 
+
+                    "meta_description_feedback": {
+                      "pros": [],
+                      "cons": [],
+                      "score": number,
+                      "recommended_score": number
+                    },
+
+                    "target_audience": string,       
+                    "missing_keywords": [],       
+                    "industry_tips": []           
+                }     
                     
                   Strictly return response in json format...
                 `,
@@ -155,9 +181,9 @@ export async function getSingleBlogAnalysis(
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.message);
+      console.error(error.message);
     } else {
-      console.log(String(error));
+      console.error(String(error));
     }
     throw new Error("Response did not match ");
   }
@@ -176,7 +202,5 @@ function extractJsonFromString(data: string) {
       console.error("Skipping invalid JSON snippet:", err);
     }
   }
-
-  // Merge them, or return first valid object
   return Object.assign({}, ...objects);
 }

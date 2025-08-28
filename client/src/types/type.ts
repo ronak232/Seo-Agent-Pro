@@ -22,13 +22,22 @@ export interface AnalysisResult {
   overall_seo_score?: number;
   keyword_usage_score?: number;
   content_quality_score?: number;
-  feedback?: string[];
-  recommendation?: string[];
-  industry_tip?: string[] | [];
-  seo_headings_feedback?: string[] | [];
+  overall_feedback?: {
+    pros: { content: string[] };
+    cons: { content: string[] };
+  };
+  meta_description_feedback?: {
+    pros?: string[] | [];
+    cons?: string[] | [];
+    score?: number | 0;
+    recommended_score?: number | 0;
+  };
+  industry_tips?: string[] | [];
+  heading_recommendations?: string[] | [];
+  body_recommendations?: string[] | [];
+  title_recommendations?: string[] | [];
   missing_keywords?: string[] | [];
-  target_audience?:string,
-  strong_content_feedback?:string[] | []
+  target_audience?: string;
 }
 
 export interface ModelProps {

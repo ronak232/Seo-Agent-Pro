@@ -3,7 +3,6 @@ import { getSingleBlogAnalysis } from "../services/services";
 
 export async function blogAnalysis(req: Request, res: Response): Promise<void> {
   const { webSearchModel, prompt } = req.body;
-
   if (!prompt) return;
 
   // analysis
